@@ -28,7 +28,7 @@ dane <- read_csv("Hipoteczny.csv")
 
 ## Wstęp
 
-Tu napisać wstęp... jakie dane, kolumny, jakie braki, skad dane, o czym projekt, jaki cel
+Tu napisać wstęp... jakie dane, kolumny, jakie braki, skad dane, o czym projekt, jaki cel. itd
 
 [Dane pochodzą z linku: jakiego?]{style="color:red"}
 
