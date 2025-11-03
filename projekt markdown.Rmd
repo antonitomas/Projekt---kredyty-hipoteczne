@@ -1,0 +1,37 @@
+---
+title: "Analiza danych - kredyty hipoteczne"
+authors: "Dominika Zapadka", "Agata Witkowska", "Mariusz Róźek", "Antoni Tomas"
+date: "`r Sys.Date()`"
+"stronka: markdown.org i tam są instrukcje odnośnie opcji markdowna"
+output:
+  rmdformats::robobook:
+    highlight: kate
+    toc: true
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    number_sections: true
+    fig_caption: true
+    fig_width: 6
+    fig_height: 4
+    sefl_contained: true
+---
+
+```{r setup, include=FALSE}
+## Global options
+library(readr)
+library(dplyr)
+knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
+dane <- read_csv("Hipoteczny.csv")
+```
+
+## Wstęp
+
+Tu napisać wstęp... jakie dane, kolumny, jakie braki, skad dane, o czym projekt, jaki cel
+
+[Dane pochodzą z linku: jakiego?]{style="color:red"}
+
+```{r}
+
+```
