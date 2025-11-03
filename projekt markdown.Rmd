@@ -1,6 +1,6 @@
 ---
 title: "Analiza danych - kredyty hipoteczne"
-authors: "Dominika Zapadka", "Agata Witkowska", "Mariusz Róźek", "Antoni Tomas"
+authors: "Dominika Zapadka", "Agata Witkowska", "Mariusz Różek", "Antoni Tomas"
 date: "`r Sys.Date()`"
 "stronka: markdown.org i tam są instrukcje odnośnie opcji markdowna"
 output:
