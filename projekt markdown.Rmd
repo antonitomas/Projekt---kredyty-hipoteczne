@@ -1,36 +1,47 @@
 ---
-title: "Analiza danych - kredyty hipoteczne"
-authors: "Dominika Zapadka", "Agata Witkowska", "Mariusz Różek", "Antoni Tomas"
+title: '
+<img src="logo.png" alt="Logo" width="400px" style="display:block; margin-left:auto; margin-right:0;" />
+<br>
+Analiza danych - kredyty hipoteczne
+'
 date: "`r Sys.Date()`"
-"stronka: markdown.org i tam są instrukcje odnośnie opcji markdowna"
+authors: "Dominika Zapadka, Agata Witkowska, Mariusz Różek, Antoni Tomas"
 output:
-  rmdformats::robobook:
+  rmarkdown::html_document:
     highlight: kate
     toc: true
+    toc_float: true
     toc_depth: 2
-    toc_float:
-      collapsed: false
-      smooth_scroll: false
     number_sections: true
     fig_caption: true
     fig_width: 6
     fig_height: 4
-    sefl_contained: true
+    self_contained: true
+    theme: readable
 ---
 
 ```{r setup, include=FALSE}
 ## Global options
 library(readr)
 library(dplyr)
-knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 dane <- read_csv("Hipoteczny.csv")
 ```
+<style>
+body {
+  background-color: #e6f0ff;
+}
+</style>
 
-## Wstęp
+# **Wstęp**
 
-Celem projektu jest przeprowadzenie analizy danych dotyczących zatwierdzenia kredytu mieszkaniowego i określenie które czynniki w największym stopniu wpływają na decyzję o przyznaniu pożyczki. Firma, której dane analizujemy obsługuje klientów z obszarów miejskich, półmiejskich i wiejskich, a proces wnioskowania odbywa się za pomocą wypełnienia formularza online przez klienta. Aby przyspieszyć podejmowanie decyzji i zwiększyć efektywność obsługi, przedsiębiorstwo planuje automatyzację procesu oceny zdolności kredytowej w czasie rzeczywistym.
+## Opis problemu
 
-Do analizy wykorzystano zbiór danych: [Hipoteczny.csv](https://github.com/antonitomas/Projekt---kredyty-hipoteczne/blob/main/Hipoteczny.csv){style="color:red"}.
+Celem projektu jest przeprowadzenie analizy danych dotyczących zatwierdzenia kredytu mieszkaniowego i określenie, które czynniki w największym stopniu wpływają na decyzję o przyznaniu pożyczki. Firma, której dane analizujemy obsługuje klientów z obszarów miejskich, półmiejskich i wiejskich, a proces wnioskowania odbywa się za pomocą wypełnienia formularza online przez klienta. Aby przyspieszyć podejmowanie decyzji i zwiększyć efektywność obsługi, przedsiębiorstwo planuje automatyzację procesu oceny zdolności kredytowej w czasie rzeczywistym.
+
+## Dane
+
+Do analizy wykorzystano zbiór danych: [Hipoteczny.csv](https://github.com/antonitomas/Projekt---kredyty-hipoteczne/blob/main/Hipoteczny.csv){style="color:navy"}.
 
 Obejmuje on 614 obserwacji. Dane pochodzą z procesu składania wniosków kredytowych i zawierają informacje o wnioskodawcy i charakterystyce pożyczki. Wśród dostępnych kolumn znajdują się między innymi:
 
@@ -49,7 +60,9 @@ Obejmuje on 614 obserwacji. Dane pochodzą z procesu składania wniosków kredyt
 
 Zbiór danych nie jest kompletny i część kolumn zawiera braki. Najwięcej braków występuje w zmiennych **Credit_History, LoanAmount, Loan_Amount_Term, Self_Employed, Dependents** oraz częściowo w **Gender** i **Married**. Wstępny przegląd danych pokazuje, że tylko zmienne takie jak dochód czy identyfikator wniosku są pełne, a elementy oceny ryzyka kredytowego wymagają dalszego uzupełnienia.
 
-Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wiążą się z przyznaniem lub odrzuceniem kredytu i przygotowaniu modelu, który mógłby automatycznie wskazywać potencjalnie kwalifikujących się wnioskdawców. Wykonamy wstępne oczyszczanie danych, eksplorację, wizualizację i przeprowadzimy analizę jedno i dwuwymiarową. Wnioski z analizy pomogą usprawnić proces oceny wniosków kredytowych oraz poprawić skuteczność i spójność decyzji podejmowanych przez firmę.
+## Przebieg analizy
+
+Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wiążą się z przyznaniem lub odrzuceniem kredytu i przygotowaniu modelu, który mógłby automatycznie wskazywać potencjalnie kwalifikujących się wnioskdawców. Wykonamy wstępne oczyszczanie danych, eksplorację, wizualizację i przeprowadzimy analizę jedno oraz dwuwymiarową. Wnioski z analizy pomogą usprawnić proces oceny wniosków kredytowych oraz poprawić skuteczność i spójność decyzji podejmowanych przez firmę.
 
 ```{r}
 
