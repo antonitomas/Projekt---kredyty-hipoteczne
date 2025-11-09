@@ -28,9 +28,28 @@ dane <- read_csv("Hipoteczny.csv")
 
 ## Wstęp
 
-Tu napisać wstęp... jakie dane, kolumny, jakie braki, skad dane, o czym projekt, jaki cel. itd
+Celem projektu jest przeprowadzenie analizy danych dotyczących zatwierdzenia kredytu mieszkaniowego i określenie które czynniki w największym stopniu wpływają na decyzję o przyznaniu pożyczki. Firma, której dane analizujemy obsługuje klientów z obszarów miejskich, półmiejskich i wiejskich, a proces wnioskowania odbywa się za pomocą wypełnienia formularza online przez klienta. Aby przyspieszyć podejmowanie decyzji i zwiększyć efektywność obsługi, przedsiębiorstwo planuje automatyzację procesu oceny zdolności kredytowej w czasie rzeczywistym.
 
-[Dane pochodzą z linku: jakiego?]{style="color:red"}
+Do analizy wykorzystano zbiór danych: [Hipoteczny.csv](https://github.com/antonitomas/Projekt---kredyty-hipoteczne/blob/main/Hipoteczny.csv){style="color:red"}.
+
+Obejmuje on 614 obserwacji. Dane pochodzą z procesu składania wniosków kredytowych i zawierają informacje o wnioskodawcy i charakterystyce pożyczki. Wśród dostępnych kolumn znajdują się między innymi:
+
+-   **Loan_ID:** identyfikator wniosku,
+-   **Gender:** płeć wnioskodawcy,
+-   **Married:** informacja o stanie cywilnym,
+-   **Dependents:** liczba osób na utrzymaniu,
+-   **Education:** poziom wykształcenia,
+-   **Self_Employed:** prowadzenie działalności gospodarczej,
+-   **ApplicantIncome i CoapplicantIncome:** dochody głównego i współwnioskodawcy,
+-   **LoanAmount:** kwota pożyczki,
+-   **Loan_Amount_Term:** okres kredytowania,
+-   **Credit_history:** informacja o historii kredytowej,
+-   **Property_Area:** obszar pochodzenia klienta,
+-   **Loan_Status:** wynik decyzji kredytowej (zatwierdzony lub odrzucony).
+
+Zbiór danych nie jest kompletny i część kolumn zawiera braki. Najwięcej braków występuje w zmiennych **Credit_History, LoanAmount, Loan_Amount_Term, Self_Employed, Dependents** oraz częściowo w **Gender** i **Married**. Wstępny przegląd danych pokazuje, że tylko zmienne takie jak dochód czy identyfikator wniosku są pełne, a elementy oceny ryzyka kredytowego wymagają dalszego uzupełnienia.
+
+Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wiążą się z przyznaniem lub odrzuceniem kredytu i przygotowaniu modelu, który mógłby automatycznie wskazywać potencjalnie kwalifikujących się wnioskdawców. Wykonamy wstępne oczyszczanie danych, eksplorację, wizualizację i przeprowadzimy analizę jedno i dwuwymiarową. Wnioski z analizy pomogą usprawnić proces oceny wniosków kredytowych oraz poprawić skuteczność i spójność decyzji podejmowanych przez firmę.
 
 ```{r}
 
