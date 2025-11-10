@@ -22,8 +22,16 @@ output:
 
 ```{r setup, include=FALSE}
 ## Global options
+if (!require("naniar")) install.packages("naniar")
+if (!require("Amelia")) install.packages("Amelia")
+if (!require("mice")) install.packages("mice")
+if (!require("finalfit")) install.packages("finalfit")
+library(finalfit)
+library(Amelia)
+library(mice)
 library(readr)
 library(dplyr)
+library(naniar)
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 dane <- read_csv("Hipoteczny.csv")
 ```
@@ -65,5 +73,16 @@ Zbiór danych nie jest kompletny i część kolumn zawiera braki. Najwięcej bra
 Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wiążą się z przyznaniem lub odrzuceniem kredytu i przygotowaniu modelu, który mógłby automatycznie wskazywać potencjalnie kwalifikujących się wnioskdawców. Wykonamy wstępne oczyszczanie danych, eksplorację, wizualizację i przeprowadzimy analizę jedno oraz dwuwymiarową. Wnioski z analizy pomogą usprawnić proces oceny wniosków kredytowych oraz poprawić skuteczność i spójność decyzji podejmowanych przez firmę.
 
 ```{r}
-
+kredyty <- as.data.frame(dane)
+View(kredyty)
 ```
+
+```{r, braki danych- naniar} 
+miss_var_summary(kredyty)
+vis_miss(kredyty, sort_miss = TRUE)
+gg_miss_fct(kredyty, Dependents)
+gg_miss_upset(kredyty)
+missmap(kredyty)
+md.pattern(kredyty, rotate.names = TRUE)
+```
+
