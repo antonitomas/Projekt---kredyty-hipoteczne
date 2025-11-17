@@ -26,6 +26,8 @@ if (!require("naniar")) install.packages("naniar")
 if (!require("Amelia")) install.packages("Amelia")
 if (!require("mice")) install.packages("mice")
 if (!require("finalfit")) install.packages("finalfit")
+if(!require("VIM")) install.packages("VIM")
+if(!require("validate")) install.packages("validate")
 library(finalfit)
 library(Amelia)
 library(mice)
@@ -72,19 +74,64 @@ Zbiór danych nie jest kompletny i część kolumn zawiera braki. Najwięcej bra
 
 Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wiążą się z przyznaniem lub odrzuceniem kredytu i przygotowaniu modelu, który mógłby automatycznie wskazywać potencjalnie kwalifikujących się wnioskdawców. Wykonamy wstępne oczyszczanie danych, eksplorację, wizualizację i przeprowadzimy analizę jedno oraz dwuwymiarową. Wnioski z analizy pomogą usprawnić proces oceny wniosków kredytowych oraz poprawić skuteczność i spójność decyzji podejmowanych przez firmę.
 
-```{r wczytanie danych}
+## Braki danych
+
+```{r wczytanie danych, message=FALSE, warning=FALSE, include=FALSE}
 kredyty <- as.data.frame(dane)
 View(kredyty)
 ```
+Opisać każdy wykres...
 
-```{r braki danych} 
+```{r podsumowanie braków danych, message=FALSE, warning=FALSE}
 miss_var_summary(kredyty)
-vis_miss(kredyty, sort_miss = TRUE)
-missing_plot(kredyty)
-gg_miss_var(kredyty)
+```
+Najwięcej braków jest dla zmiennej Credit_History (50 braków), następnie Self_Employed (32 braki), LoanAmount (22 braki) oraz Dependents (15 braków.
+```{r wizualizacja braków danych 1, message=FALSE, warning=FALSE}
 gg_miss_fct(kredyty, Dependents)
+```
+
+```{r wizualizacja braków danych 2, message=FALSE, warning=FALSE}
 gg_miss_upset(kredyty)
+```
+
+```{r wizualizacja braków danych 3, message=FALSE, warning=FALSE}
 missmap(kredyty)
+```
+Wykres popa
+```{r wizualizacja braków danych 4, message=FALSE, warning=FALSE}
 md.pattern(kredyty, rotate.names = TRUE)
 ```
 
+Dane zawierają 2% braków danych (Missingness Map), a braki ten nie są zależne między sobą (md pattern). W celu zastąpienia braków danych można wykorzystać proste metody: mediana, średnia, dominanta lub użyć funkcji hotdeck.
+
+## Zastępowanie braków danych
+Hotdeck - zastępowanie braków danych według wierszy najczęściej się powtarzających (najbardziej prawdopodobny)
+
+```{r zastępowanie braków danych, message=FALSE, warning=FALSE}
+library(VIM)
+kredyty_inp <- hotdeck(kredyty)
+vis_miss(kredyty_inp, sort_miss = TRUE)
+```
+## Reguły zmiennych
+Nadano reguły dla zmiennych w celu sprawdzenia poprawności danych po uzupełnieniu braków.Stworzono wykres, który sprawdza, czy dane spełniają ustalone reguły.
+```{r reguły zmiennych}
+#ustalanie reguł dla zmiennych
+library(validate) 
+rules <- validator (
+  Dependents >=0,
+  Gender %in% c("Male","Female"),
+  Married %in% c("Yes","No"),
+  Education %in% c("Graduate","Not Graduate"),
+  Self_Employed %in% c("Yes","No"),
+  Applicantincome >=0,
+  Coapplicantincome >=0,
+  LoanAmount >=0,
+  Loan_Amount_Term >=0,
+  Loan_Status %in% c("Y","N"),
+  Credit_history %in% c(0,1)
+)
+cf <- confront(kredyty_inp, rules, key="Loan_ID")
+summary(cf)
+barplot(cf, main="kredyty_inp")
+#as.data.frame(cf) %>% head()
+```
