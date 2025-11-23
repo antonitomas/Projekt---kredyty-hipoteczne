@@ -167,7 +167,7 @@ rules <- validator (
   Coapplicantincome >=0,
   LoanAmount >=0,
   Loan_Amount_Term >=0,
-  Loan_Amount_Term %% 30 == 0,
+  Loan_Amount_Term %% 6 == 0,
   Property_Area %in% c("Urban","Semiurban","Rural"),
   Loan_Status %in% c("Y","N"),
   Credit_history %in% c(0,1)
