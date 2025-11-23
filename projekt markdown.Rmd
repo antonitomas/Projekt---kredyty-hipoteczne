@@ -28,32 +28,41 @@ if (!require("mice")) install.packages("mice")
 if (!require("finalfit")) install.packages("finalfit")
 if(!require("VIM")) install.packages("VIM")
 if(!require("validate")) install.packages("validate")
+if(!require("knitr")) install.packages("knitr")
+if(!require("kableExtra")) install.packages("kableExtra")
+if(!require("ggplot2")) install.packages("ggplot2")
 library(finalfit)
 library(Amelia)
 library(mice)
 library(readr)
 library(dplyr)
 library(naniar)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 dane <- read_csv("Hipoteczny.csv")
 ```
+
+```{=html}
 <style>
 body {
   background-color: #e6f0ff;
 }
 </style>
+```
 
 # **Wstęp**
 
 ## Opis problemu
 
-Celem projektu jest przeprowadzenie analizy danych dotyczących zatwierdzenia kredytu mieszkaniowego i określenie, które czynniki w największym stopniu wpływają na decyzję o przyznaniu pożyczki. Firma, której dane analizujemy obsługuje klientów z obszarów miejskich, półmiejskich i wiejskich, a proces wnioskowania odbywa się za pomocą wypełnienia formularza online przez klienta. Aby przyspieszyć podejmowanie decyzji i zwiększyć efektywność obsługi, przedsiębiorstwo planuje automatyzację procesu oceny zdolności kredytowej w czasie rzeczywistym.
+<p style="text-align: justify;">Celem projektu jest przeprowadzenie analizy danych dotyczących zatwierdzenia kredytu mieszkaniowego i określenie, które czynniki w największym stopniu wpływają na decyzję o przyznaniu pożyczki. Firma, której dane analizujemy obsługuje klientów z obszarów miejskich, półmiejskich i wiejskich, a proces wnioskowania odbywa się za pomocą wypełnienia formularza online przez klienta. Aby przyspieszyć podejmowanie decyzji i zwiększyć efektywność obsługi, przedsiębiorstwo planuje automatyzację procesu oceny zdolności kredytowej w czasie rzeczywistym.</p>
 
 ## Dane
 
 Do analizy wykorzystano zbiór danych: [Hipoteczny.csv](https://github.com/antonitomas/Projekt---kredyty-hipoteczne/blob/main/Hipoteczny.csv){style="color:navy"}.
 
-Obejmuje on 614 obserwacji. Dane pochodzą z procesu składania wniosków kredytowych i zawierają informacje o wnioskodawcy i charakterystyce pożyczki. Wśród dostępnych kolumn znajdują się między innymi:
+<p style="text-align: justify;">Obejmuje on 614 obserwacji. Dane pochodzą z procesu składania wniosków kredytowych i zawierają informacje o wnioskodawcy i charakterystyce pożyczki. Wśród dostępnych kolumn znajdują się między innymi:</p>
 
 -   **Loan_ID:** identyfikator wniosku,
 -   **Gender:** płeć wnioskodawcy,
@@ -68,11 +77,13 @@ Obejmuje on 614 obserwacji. Dane pochodzą z procesu składania wniosków kredyt
 -   **Property_Area:** obszar pochodzenia klienta,
 -   **Loan_Status:** wynik decyzji kredytowej (zatwierdzony lub odrzucony).
 
-Zbiór danych nie jest kompletny i część kolumn zawiera braki. Najwięcej braków występuje w zmiennych **Credit_History, LoanAmount, Loan_Amount_Term, Self_Employed, Dependents** oraz częściowo w **Gender** i **Married**. Wstępny przegląd danych pokazuje, że tylko zmienne takie jak dochód czy identyfikator wniosku są pełne, a elementy oceny ryzyka kredytowego wymagają dalszego uzupełnienia.
+<p style="text-align: justify;">Zbiór danych nie jest kompletny i część kolumn zawiera braki. Najwięcej braków występuje w zmiennych **Credit_History, LoanAmount, Loan_Amount_Term, Self_Employed, Dependents** oraz częściowo w **Gender** i **Married**. Wstępny przegląd danych pokazuje, że tylko zmienne takie jak dochód czy identyfikator wniosku są pełne, a elementy oceny ryzyka kredytowego wymagają dalszego uzupełnienia.</p>
 
 ## Przebieg analizy
 
-Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wiążą się z przyznaniem lub odrzuceniem kredytu i przygotowaniu modelu, który mógłby automatycznie wskazywać potencjalnie kwalifikujących się wnioskdawców. Wykonamy wstępne oczyszczanie danych, eksplorację, wizualizację i przeprowadzimy analizę jedno oraz dwuwymiarową. Wnioski z analizy pomogą usprawnić proces oceny wniosków kredytowych oraz poprawić skuteczność i spójność decyzji podejmowanych przez firmę.
+<p style="text-align: justify;">Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wiążą się z przyznaniem lub odrzuceniem kredytu i przygotowaniu modelu, który mógłby automatycznie wskazywać potencjalnie kwalifikujących się wnioskdawców. Wykonamy wstępne oczyszczanie danych, eksplorację, wizualizację i przeprowadzimy analizę jedno oraz dwuwymiarową. Wnioski z analizy pomogą usprawnić proces oceny wniosków kredytowych oraz poprawić skuteczność i spójność decyzji podejmowanych przez firmę.</p>
+
+# **Przygotowanie danych**
 
 ## Braki danych
 
@@ -80,40 +91,69 @@ Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wią�
 kredyty <- as.data.frame(dane)
 View(kredyty)
 ```
-Opisać każdy wykres...
 
 ```{r podsumowanie braków danych, message=FALSE, warning=FALSE}
-miss_var_summary(kredyty)
-```
-Najwięcej braków jest dla zmiennej Credit_History (50 braków), następnie Self_Employed (32 braki), LoanAmount (22 braki) oraz Dependents (15 braków.
-```{r wizualizacja braków danych 1, message=FALSE, warning=FALSE}
-gg_miss_fct(kredyty, Dependents)
+liczba_brakow <- miss_var_summary(kredyty)
+tabela1 <- head(liczba_brakow,3)
+colnames(tabela1) <- c("Nazwa zmiennej", "Liczba braków", "Udział braków")
+
+kable(tabela1, align = "c") %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  row_spec(0, bold = TRUE, color = "navy")
 ```
 
-```{r wizualizacja braków danych 2, message=FALSE, warning=FALSE}
+<p style="text-align: justify;">Największą liczbę brakujących danych zawierają kolejno zmienne:
+<span style="color:navy;">Credit_History</span> (50 braków danych),
+<span style="color:navy;">Self_Employed</span> (32 braki danych) oraz
+<span style="color:navy;">LoanAmount</span> (22 braki danych).</p>
+
+<p style="text-align: center;"><span style="color:navy;">**Braki danych według liczby osób na utrzymaniu**</span></p>
+
+```{r wizualizacja braków danych 1, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5}
+gg_miss_fct(kredyty, Dependents) +
+  labs(title = "",
+       x = "Liczba osób na utrzymaniu",
+       y = "Zmienne",
+       fill = "Procent braków") +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) +
+  scale_fill_gradient(low="lavender", high="navy")
+```
+
+<p style="text-align: justify;">Na podstawie heatmapy można stwierdzić nielosowość brakujących danych. Widać to na podstawie dużego natężenia braków danych w zmiennej określającej stan cywilny klienta (<span style="color:navy;">Married</span>), w sytuacji gdy nie podał on również liczby osób na swoim utrzymaniu (<span style="color:navy;">Dependents</span>).</p>
+
+```{r wizualizacja braków danych 2, message=FALSE, warning=FALSE, include=FALSE}
 gg_miss_upset(kredyty)
 ```
 
-```{r wizualizacja braków danych 3, message=FALSE, warning=FALSE}
-missmap(kredyty)
-```
-Wykres popa
-```{r wizualizacja braków danych 4, message=FALSE, warning=FALSE}
-md.pattern(kredyty, rotate.names = TRUE)
+<p style="text-align: center;"><span style="color:navy;">**Mapa braków danych**</span></p>
+
+```{r wizualizacja braków danych 3, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5}
+missmap(kredyty,
+        main = "",
+        col = c("lavender", "midnightblue"))
 ```
 
-Dane zawierają 2% braków danych (Missingness Map), a braki ten nie są zależne między sobą (md pattern). W celu zastąpienia braków danych można wykorzystać proste metody: mediana, średnia, dominanta lub użyć funkcji hotdeck.
+```{r wizualizacja braków danych 4, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5}
+invisible(md.pattern(kredyty, rotate.names = TRUE))
+```
+
+<p style="text-align: justify;">Dane zawierają 2% braków danych (<span style="color:navy;">missmap</span>), a braki te nie są zależne między sobą (<span style="color:navy;">md.pattern</span>). W celu zastąpienia braków danych można wykorzystać proste metody: mediana, średnia, dominanta lub użyć funkcji hotdeck.</p>
 
 ## Zastępowanie braków danych
-Hotdeck - zastępowanie braków danych według wierszy najczęściej się powtarzających (najbardziej prawdopodobny)
+
+<p style="text-align: justify;"><span style="color:navy;">**Hotdeck**</span> - metoda polegająca na zastępowaniu braków danych według wierszy najczęściej się powtarzających (najbardziej prawdopodobny)</p>
 
 ```{r zastępowanie braków danych, message=FALSE, warning=FALSE}
 library(VIM)
 kredyty_inp <- hotdeck(kredyty)
 vis_miss(kredyty_inp, sort_miss = TRUE)
 ```
+
 ## Reguły zmiennych
+
 Nadano reguły dla zmiennych w celu sprawdzenia poprawności danych po uzupełnieniu braków.Stworzono wykres, który sprawdza, czy dane spełniają ustalone reguły.
+
 ```{r reguły zmiennych}
 #ustalanie reguł dla zmiennych
 library(validate) 
