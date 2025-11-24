@@ -177,3 +177,10 @@ summary(cf)
 barplot(cf, main="kredyty_inp")
 #as.data.frame(cf) %>% head()
 ```
+
+## Duplikaty
+Dane nie posiadają duplikatów, opisac....
+```{r}
+sum(duplicated(kredyty_inp))
+```
+
