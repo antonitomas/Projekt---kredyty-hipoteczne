@@ -179,8 +179,42 @@ barplot(cf, main="kredyty_inp")
 ```
 
 ## Duplikaty
-Dane nie posiadają duplikatów, opisac....
+Dane nie posiadają duplikatów, obserwacje są unikalne i nie ma potrzeby dodatkowego czyszczenia pod kątem prawidłowości struktury danych. 
 ```{r}
 sum(duplicated(kredyty_inp))
 ```
 
+# **Wizualizacja danych**
+
+## Wykres słupkowy
+Czy miejsce zamieszkania wpływa na decyzję o przyznaniu kredytu?
+```{r}
+ggplot(kredyty_inp, aes(x = Property_Area, fill = Loan_Status)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Udział decyzji kredytowych w zależności od obszaru",
+       x = "Obszar",
+       y = "Udział (%)",
+       fill = "Decyzja") +
+  scale_fill_manual(values = c("N" = "red", "Y" = "blue")) +
+  theme_minimal(base_size = 10)
+```
+
+Najwyższy odsetek wniosków zakończonych przyznaniem kredytu można zaobserwować wśród klientów mieszkających w obszarach półmiejskich. W tej grupie ponad 75% wniosków kończy się akceptacją. W obszarach miejskich i wiejskich udział decyzji pozytywnych jest niższy i wynosi około 60-65%.
+
+
+```{r}
+ggplot(kredyty_inp, aes(x = as.factor(Credit_History), fill = Loan_Status)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Udział decyzji kredytowych w zależności od historii kredytowej",
+    x = "Historia kredytowa (0 = brak, 1 = dobra)",
+    y = "Udział (%)",
+    fill = "Decyzja"
+  ) +
+  scale_fill_manual(values = c("N" = "red", "Y" = "blue")) +
+  theme_minimal(base_size = 10)
+```
+
+Wykres pokazuje, że wśród klientów posiadających historię kredytową znaczna większość otrzymuje kredyt, natomiast jej brak wiąże się z dużo większym odsetkiem odrzuceń.
