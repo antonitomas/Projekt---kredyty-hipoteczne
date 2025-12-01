@@ -218,3 +218,101 @@ ggplot(kredyty_inp, aes(x = as.factor(Credit_History), fill = Loan_Status)) +
 ```
 
 <p style="text-align: justify;">Wykres pokazuje, że wśród klientów posiadających historię kredytową znaczna większość otrzymuje kredyt, natomiast jej brak wiąże się z dużo większym odsetkiem odrzuceń.</p>
+
+## Heatmapa
+```{r}
+macierz_korelacji <- round(cor(kredyty_inp %>% select_if(is.numeric)), 2)
+macierz_korelacji <- reshape2::melt(macierz_korelacji)
+
+ggplot(data = macierz_korelacji, aes(x = Var1, y = Var2, fill = value)) +
+    geom_tile(color = "white") + # Użycie kafelków do stworzenia mapy ciepła
+    scale_fill_gradient2(
+        low = "darkblue",
+        high = "darkred",
+        mid = "white",
+        midpoint = 0,
+        limit = c(-1, 1),
+        space = "Lab",
+        name = "Korelacja"
+    ) +
+    theme_minimal() +
+    coord_fixed() + # Utrzymanie kwadratowych proporcji kafelków
+    geom_text(aes(Var1, Var2, label = round(value, 2)), color = "black", size = 4) + # Dodanie wartości liczbowych
+    labs(
+        title = "Korelacja zmiennych numerycznych",
+        x = "",
+        y = ""
+    ) +
+    theme(
+        axis.text.x = element_text(angle = 45, vjust = 1, size = 10, hjust = 1),
+        axis.text.y = element_text(size = 10),
+        plot.title = element_text(hjust = 0.5)
+    )
+
+```
+```{r}
+ggplot(data = kredyty_inp, aes(x = ApplicantIncome, y = LoanAmount, color = Loan_Status)) +
+    geom_point(alpha = 0.7, size = 3) + 
+    labs(
+        title = "Zależność między dochodem wnioskodawcy a kwotą pożyczki",
+        x = "Dochód Wnioskodawcy [USD]",
+        y = "Kwota Pożyczki [tys. USD]",
+        color = "Status Pożyczki"
+    ) +
+    scale_color_manual(values = c("N" = "pink", "Y" = "navy")) +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5))
+
+```
+Zdecydowana większość wniosków kredytowych koncentruje się w obszarze niskich dochodów - poniżej 20 000 USD oraz niskich kwot pożyczek, czyli tych o kwotach poniżej 300 tys. USD.dochód i kwota pożyczki nie są jedynymi czynnikami decyzyjnymi, ponieważ w tym obszarze występują zarówno wnioski przyjęte, jak i odrzucone. 
+```{r}
+# Definiowanie kryteriów filtra
+max_income <- 20000
+max_loan_amount <- 300
+
+# Filtracja danych
+filtered_data <- kredyty_inp %>%
+    filter(ApplicantIncome <= max_income) %>%
+    filter(LoanAmount <= max_loan_amount)
+
+# Zliczenie wyników dla statusu 'Y' (przyjęte) i 'N' (odrzucone)
+# Funkcja count() z dplyr zlicza wystąpienia unikalnych wartości w kolumnie Loan_Status
+counts_summary <- filtered_data %>%
+    count(Loan_Status)
+
+# Wyświetlenie wyników
+print("Ilości pożyczek w przedziale (Dochód <= 20000 USD, Kwota <= 300 tys. USD):")
+print(counts_summary)
+
+kolowy <- data.frame(
+  Loan_Status = c("N", "Y"),
+  n = c(177, 401)
+)
+
+kolowy2 <- kolowy %>%
+  mutate(
+    total = sum(n),
+    percentage = (n / total) * 100,
+    # Pozycja etykiety na środku "plasterka" (skumulowana suma procentów)
+    label_y_pos = cumsum(percentage) - 0.9 * percentage
+  )
+
+ggplot(kolowy2, aes(x = "", y = percentage, fill = Loan_Status)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) + 
+  scale_fill_manual(values = c("N" = "pink", "Y" = "navy")) + 
+  theme_void() + 
+  labs(title = "Rozkład statusów decyzji kredytowych", fill = "Status Pożyczki") +
+  
+  geom_text(
+    aes(y = label_y_pos, label = paste0(round(percentage, 1), "%\n(n=", n, ")")),
+    color = "white",
+    size = 5,
+    frontface = "bold"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    legend.position = "bottom" 
+  )
+```
+Zmienić i napisać w pakiecie ggpie
