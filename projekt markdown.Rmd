@@ -152,7 +152,7 @@ vis_miss(kredyty_inp, sort_miss = TRUE)
 
 ## Reguły zmiennych
 
-Nadano reguły dla zmiennych w celu sprawdzenia poprawności danych po uzupełnieniu braków.Stworzono wykres, który sprawdza, czy dane spełniają ustalone reguły.
+Nadano reguły dla zmiennych w celu sprawdzenia poprawności danych po uzupełnieniu braków. Stworzono wykres, który sprawdza, czy dane spełniają ustalone reguły.
 
 ```{r reguły zmiennych}
 #ustalanie reguł dla zmiennych
@@ -188,7 +188,7 @@ sum(duplicated(kredyty_inp))
 
 ## Wykres słupkowy
 Czy miejsce zamieszkania wpływa na decyzję o przyznaniu kredytu?
-```{r}
+```{r, fig.align='center', fig.width=7, fig.height=5}
 ggplot(kredyty_inp, aes(x = Property_Area, fill = Loan_Status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
@@ -196,14 +196,14 @@ ggplot(kredyty_inp, aes(x = Property_Area, fill = Loan_Status)) +
        x = "Obszar",
        y = "Udział (%)",
        fill = "Decyzja") +
-  scale_fill_manual(values = c("N" = "red", "Y" = "blue")) +
+  scale_fill_manual(values = c("N" = "lavender", "Y" = "navy")) +
   theme_minimal(base_size = 10)
 ```
 
-Najwyższy odsetek wniosków zakończonych przyznaniem kredytu można zaobserwować wśród klientów mieszkających w obszarach półmiejskich. W tej grupie ponad 75% wniosków kończy się akceptacją. W obszarach miejskich i wiejskich udział decyzji pozytywnych jest niższy i wynosi około 60-65%.
+<p style="text-align: justify;">Najwyższy odsetek wniosków zakończonych przyznaniem kredytu można zaobserwować wśród klientów mieszkających w obszarach półmiejskich. W tej grupie ponad 75% wniosków kończy się akceptacją. W obszarach miejskich i wiejskich udział decyzji pozytywnych jest niższy i wynosi około 60-65%.</p>
 
 
-```{r}
+```{r, fig.align='center', fig.width=7, fig.height=5}
 ggplot(kredyty_inp, aes(x = as.factor(Credit_History), fill = Loan_Status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
@@ -213,8 +213,8 @@ ggplot(kredyty_inp, aes(x = as.factor(Credit_History), fill = Loan_Status)) +
     y = "Udział (%)",
     fill = "Decyzja"
   ) +
-  scale_fill_manual(values = c("N" = "red", "Y" = "blue")) +
+  scale_fill_manual(values = c("N" = "lavender", "Y" = "navy")) +
   theme_minimal(base_size = 10)
 ```
 
-Wykres pokazuje, że wśród klientów posiadających historię kredytową znaczna większość otrzymuje kredyt, natomiast jej brak wiąże się z dużo większym odsetkiem odrzuceń.
+<p style="text-align: justify;">Wykres pokazuje, że wśród klientów posiadających historię kredytową znaczna większość otrzymuje kredyt, natomiast jej brak wiąże się z dużo większym odsetkiem odrzuceń.</p>
