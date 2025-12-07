@@ -238,6 +238,11 @@ ggplot(kredyty_inp, aes(x = as.factor(Education), fill = Loan_Status)) +
 ggplot(kredyty_inp, aes(x = Education, y = LoanAmount)) +
   geom_boxplot()
 ```
+
+```{r}
+ggplot(kredyty_inp, aes(x = Gender, y = LoanAmount)) +
+  geom_boxplot()
+```
 ## Heatmapa
 ```{r}
 macierz_korelacji <- round(cor(kredyty_inp %>% select_if(is.numeric)), 2)
