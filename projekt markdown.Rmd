@@ -258,6 +258,12 @@ ggplot(kredyty_inp, aes(x = Property_Area, y = LoanAmount)) +
 ggplot(kredyty_inp, aes(x = Dependents, y = LoanAmount)) +
   geom_boxplot()
 ```
+
+```{r}
+ggplot(kredyty_inp, aes(x = Married, y = LoanAmount)) +
+  geom_boxplot()
+```
+
 ## Heatmapa
 ```{r}
 macierz_korelacji <- round(cor(kredyty_inp %>% select_if(is.numeric)), 2)
