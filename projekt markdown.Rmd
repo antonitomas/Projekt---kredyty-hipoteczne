@@ -31,6 +31,7 @@ if(!require("validate")) install.packages("validate")
 if(!require("knitr")) install.packages("knitr")
 if(!require("kableExtra")) install.packages("kableExtra")
 if(!require("ggplot2")) install.packages("ggplot2")
+if(!require("patchwork")) install.packages("patchwork")
 library(finalfit)
 library(Amelia)
 library(mice)
@@ -40,6 +41,7 @@ library(naniar)
 library(knitr)
 library(kableExtra)
 library(ggplot2)
+library(patchwork)
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 dane <- read_csv("Hipoteczny.csv")
 ```
@@ -186,14 +188,18 @@ sum(duplicated(kredyty_inp))
 
 # **Wizualizacja danych**
 
-## Wykres słupkowy
+## Wykresy słupkowe
+
 Czy miejsce zamieszkania wpływa na decyzję o przyznaniu kredytu?
+
+<p style="text-align: center;"><span style="color:navy;">**Udział decyzji kredytowych w zależności od obszaru zamieszkania**</span></p>
+
 ```{r, fig.align='center', fig.width=7, fig.height=5}
 ggplot(kredyty_inp, aes(x = Property_Area, fill = Loan_Status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
-  labs(title = "Udział decyzji kredytowych w zależności od obszaru",
-       x = "Obszar",
+  labs(
+       x = "Obszar zamieszkania",
        y = "Udział (%)",
        fill = "Decyzja") +
   scale_fill_manual(values = c("N" = "lavender", "Y" = "navy")) +
@@ -202,13 +208,13 @@ ggplot(kredyty_inp, aes(x = Property_Area, fill = Loan_Status)) +
 
 <p style="text-align: justify;">Najwyższy odsetek wniosków zakończonych przyznaniem kredytu można zaobserwować wśród klientów mieszkających w obszarach półmiejskich. W tej grupie ponad 75% wniosków kończy się akceptacją. W obszarach miejskich i wiejskich udział decyzji pozytywnych jest niższy i wynosi około 60-65%.</p>
 
+<p style="text-align: center;"><span style="color:navy;">**Udział decyzji kredytowych w zależności od historii kredytowej**</span></p>
 
 ```{r, fig.align='center', fig.width=7, fig.height=5}
 ggplot(kredyty_inp, aes(x = as.factor(Credit_History), fill = Loan_Status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   labs(
-    title = "Udział decyzji kredytowych w zależności od historii kredytowej",
     x = "Historia kredytowa (0 = brak, 1 = dobra)",
     y = "Udział (%)",
     fill = "Decyzja"
@@ -219,12 +225,13 @@ ggplot(kredyty_inp, aes(x = as.factor(Credit_History), fill = Loan_Status)) +
 
 <p style="text-align: justify;">Wykres pokazuje, że wśród klientów posiadających historię kredytową znaczna większość otrzymuje kredyt, natomiast jej brak wiąże się z dużo większym odsetkiem odrzuceń.</p>
 
-```{r}
+<p style="text-align: center;"><span style="color:navy;">**Udział decyzji kredytowych w zależności od poziomu wykształcenia**</span></p>
+
+```{r, fig.align='center', fig.width=7, fig.height=5}
 ggplot(kredyty_inp, aes(x = as.factor(Education), fill = Loan_Status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   labs(
-    title = "Udział decyzji kredytowych w zależności od poziomu wykształcenia",
     x = "Poziom wykształcenia",
     y = "Udział (%)",
     fill = "Decyzja"
@@ -233,103 +240,151 @@ ggplot(kredyty_inp, aes(x = as.factor(Education), fill = Loan_Status)) +
   theme_minimal(base_size = 10) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
-## Boxploty
-```{r}
-ggplot(kredyty_inp, aes(x = Education, y = LoanAmount)) +
-  geom_boxplot()
-```
 
-```{r}
-ggplot(kredyty_inp, aes(x = Gender, y = LoanAmount)) +
-  geom_boxplot()
-```
+## Wykresy pudełkowe
 
-```{r}
-ggplot(kredyty_inp, aes(x = as.factor(Credit_History), y = LoanAmount)) +
-  geom_boxplot()
-```
+```{r, fig.align='center', fig.width=7, fig.height=8}
+p1 <- ggplot(kredyty_inp, aes(x = Education, y = LoanAmount)) +
+  geom_boxplot(color = "navy") +
+  labs(
+    x = "Poziom wykształcenia",
+    y = "Kwota pożyczki [tys. USD]"
+  ) +
+  theme(plot.margin = margin(5,5,5,5)) +
+  theme_minimal()
 
-```{r}
-ggplot(kredyty_inp, aes(x = Property_Area, y = LoanAmount)) +
-  geom_boxplot()
-```
+p2 <- ggplot(kredyty_inp, aes(x = Gender, y = LoanAmount)) +
+  geom_boxplot(color = "navy") +
+  labs(
+    x = "Płeć",
+    y = "Kwota pożyczki [tys. USD]"
+  ) +
+  theme(plot.margin = margin(5,5,5,5)) +
+  theme_minimal()
 
-```{r}
-ggplot(kredyty_inp, aes(x = Dependents, y = LoanAmount)) +
-  geom_boxplot()
-```
+p3 <- ggplot(kredyty_inp, aes(x = as.factor(Credit_History), y = LoanAmount)) +
+  geom_boxplot(color = "navy") +
+  labs(
+    x = "Historia kredytowa (0 = brak, 1 = dobra)",
+    y = "Kwota pożyczki [tys. USD]"
+  ) +
+  theme(plot.margin = margin(20,5,5,5)) +
+  theme_minimal()
 
-```{r}
-ggplot(kredyty_inp, aes(x = Married, y = LoanAmount)) +
-  geom_boxplot()
+p4 <- ggplot(kredyty_inp, aes(x = Property_Area, y = LoanAmount)) +
+  geom_boxplot(color = "navy") +
+  labs(
+    x = "Obszar zamieszkania",
+    y = "Kwota pożyczki [tys. USD]"
+  ) +
+  theme(plot.margin = margin(20,5,5,5)) +
+  theme_minimal()
+
+p5 <- ggplot(kredyty_inp, aes(x = Dependents, y = LoanAmount)) +
+  geom_boxplot(color = "navy") +
+  labs(
+    x = "Liczba osób w gospodarstwie",
+    y = "Kwota pożyczki [tys. USD]"
+  ) +
+  theme(plot.margin = margin(20,5,5,5)) +
+  theme_minimal()
+
+p6 <- ggplot(kredyty_inp, aes(x = Married, y = LoanAmount)) +
+  geom_boxplot(color = "navy") +
+  labs(
+    x = "Status cywilny",
+    y = "Kwota pożyczki [tys. USD]"
+  ) +
+  theme(plot.margin = margin(20,5,5,5)) +
+  theme_minimal()
+
+(p1 + p2) /
+(p3 + p4) /
+(p5 + p6) +
+  plot_layout(heights = c(1, 1, 1))
+
 ```
 
 ## Heatmapa
-```{r}
+
+<p style="text-align: center;"><span style="color:navy;">**Korelacja zmiennych numerycznych**</span></p>
+
+```{r, fig.align='center', fig.width=7, fig.height=5}
 macierz_korelacji <- round(cor(kredyty_inp %>% select_if(is.numeric)), 2)
 macierz_korelacji <- reshape2::melt(macierz_korelacji)
 
+nazwy <- c(
+  ApplicantIncome = "Dochód wnioskodawcy",
+  CoapplicantIncome = "Dochód współwnioskodawcy",
+  LoanAmount = "Kwota pożyczki",
+  Loan_Amount_Term = "Okres pożyczki",
+  Credit_History = "Historia kredytowa"
+)
+
 ggplot(data = macierz_korelacji, aes(x = Var1, y = Var2, fill = value)) +
-    geom_tile(color = "white") + # Użycie kafelków do stworzenia mapy ciepła
+    geom_tile(color = "white") +
     scale_fill_gradient2(
-        low = "darkblue",
-        high = "darkred",
-        mid = "white",
+        low = "orchid",
+        high = "navy",
+        mid = "lavender",
         midpoint = 0,
         limit = c(-1, 1),
         space = "Lab",
         name = "Korelacja"
     ) +
     theme_minimal() +
-    coord_fixed() + # Utrzymanie kwadratowych proporcji kafelków
-    geom_text(aes(Var1, Var2, label = round(value, 2)), color = "black", size = 4) + # Dodanie wartości liczbowych
+    coord_fixed() +
+    geom_text(aes(Var1, Var2, label = round(value, 2)), color = "black", size = 4) +
     labs(
-        title = "Korelacja zmiennych numerycznych",
         x = "",
         y = ""
     ) +
+    scale_x_discrete(labels = nazwy) +
+    scale_y_discrete(labels = nazwy) +
     theme(
-        axis.text.x = element_text(angle = 45, vjust = 1, size = 10, hjust = 1),
+        axis.text.x = element_text(angle = 90, vjust = 1, size = 10, hjust = 1),
         axis.text.y = element_text(size = 10),
         plot.title = element_text(hjust = 0.5)
     )
 
 ```
-```{r}
+
+## Wykres punktowy
+
+<p style="text-align: center;"><span style="color:navy;">**Zależność między dochodem wnioskodawcy a kwotą pożyczki**</span></p>
+
+```{r, fig.align='center', fig.width=7, fig.height=5}
 filtered_data <- kredyty_inp %>%
-    mutate(Income = log(ApplicantIncome + CoapplicantIncome))
+    mutate(Income = (ApplicantIncome + CoapplicantIncome)/1000)
 ggplot(data = filtered_data, aes(x = Income, y = LoanAmount, color = Loan_Status)) +
     geom_point(alpha = 0.7, size = 3) + 
     labs(
-        title = "Zależność między dochodem wnioskodawcy a kwotą pożyczki",
-        x = "Dochód Gospodarstwa Domowego",
-        y = "Kwota Pożyczki [tys. USD]",
-        color = "Status Pożyczki"
+        x = "Dochód gospodarstwa domowego [tys. USD]",
+        y = "Kwota pożyczki [tys. USD]",
+        color = "Status pożyczki"
     ) +
-    scale_color_manual(values = c("N" = "#eb4196", "Y" = "navy")) +
+    scale_color_manual(values = c("N" = "orchid", "Y" = "navy")) +
     theme_minimal() +
     theme(plot.title = element_text(hjust = 0.5))
 
 ```
-Zdecydowana większość wniosków kredytowych koncentruje się w obszarze niskich dochodów - poniżej 20 000 USD oraz niskich kwot pożyczek, czyli tych o kwotach poniżej 300 tys. USD.dochód i kwota pożyczki nie są jedynymi czynnikami decyzyjnymi, ponieważ w tym obszarze występują zarówno wnioski przyjęte, jak i odrzucone. 
-```{r}
-# Definiowanie kryteriów filtra
+
+<p style="text-align: justify;">Zdecydowana większość wniosków kredytowych koncentruje się w obszarze niskich dochodów - poniżej 20 000 USD oraz niskich kwot pożyczek, czyli tych o kwotach poniżej 300 tys. USD. Powyższy wykres wskazuje zatem, że dochód i kwota pożyczki nie są jedynymi czynnikami decyzyjnymi, ponieważ w określonym obszarze występują zarówno wnioski przyjęte, jak i odrzucone.</p>
+
+## Wykres kołowy
+
+<p style="text-align: center;"><span style="color:navy;">**Rozkład statusów decyzji kredytowych**</span></p>
+
+```{r, fig.align='center', fig.width=7, fig.height=5}
 max_income <- 20000
 max_loan_amount <- 300
 
-# Filtracja danych
 filtered_data <- kredyty_inp %>%
     filter(ApplicantIncome <= max_income) %>%
     filter(LoanAmount <= max_loan_amount)
 
-# Zliczenie wyników dla statusu 'Y' (przyjęte) i 'N' (odrzucone)
-# Funkcja count() z dplyr zlicza wystąpienia unikalnych wartości w kolumnie Loan_Status
 counts_summary <- filtered_data %>%
     count(Loan_Status)
-
-# Wyświetlenie wyników
-print("Ilości pożyczek w przedziale (Dochód <= 20000 USD, Kwota <= 300 tys. USD):")
-print(counts_summary)
 
 kolowy <- data.frame(
   Loan_Status = c("N", "Y"),
@@ -339,27 +394,25 @@ kolowy <- data.frame(
 kolowy2 <- kolowy %>%
   mutate(
     total = sum(n),
-    percentage = (n / total) * 100,
-    # Pozycja etykiety na środku "plasterka" (skumulowana suma procentów)
-    label_y_pos = cumsum(percentage) - 0.9 * percentage
+    percentage = (n / total) * 100
   )
 
 ggplot(kolowy2, aes(x = "", y = percentage, fill = Loan_Status)) +
   geom_bar(width = 1, stat = "identity", color = "white") +
   coord_polar("y", start = 0) + 
-  scale_fill_manual(values = c("N" = "pink", "Y" = "navy")) + 
+  scale_fill_manual(values = c("N" = "orchid", "Y" = "navy")) + 
   theme_void() + 
-  labs(title = "Rozkład statusów decyzji kredytowych", fill = "Status Pożyczki") +
-  
+  labs(fill = "Status pożyczki") +
   geom_text(
-    aes(y = label_y_pos, label = paste0(round(percentage, 1), "%\n(n=", n, ")")),
-    color = "white",
-    size = 5,
-    frontface = "bold"
+    aes(label = paste0(round(percentage, 1), "%\n(", n, ")")),
+    position = position_stack(vjust = 0.5),
+    color = "lavender",
+    size = 5
   ) +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    legend.position = "bottom" 
+    legend.position = "right"
   )
+
+# albo w ggpie
 ```
-Zmienić i napisać w pakiecie ggpie
+
