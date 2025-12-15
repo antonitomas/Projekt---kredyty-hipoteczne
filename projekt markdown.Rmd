@@ -292,7 +292,7 @@ p5 <- ggplot(kredyty_inp, aes(x = Dependents, y = LoanAmount)) +
 p6 <- ggplot(kredyty_inp, aes(x = Married, y = LoanAmount)) +
   geom_boxplot(color = "navy") +
   labs(
-    x = "Status cywilny",
+    x = "Związek małżeński",
     y = "Kwota pożyczki [tys. USD]"
   ) +
   theme(plot.margin = margin(20,5,5,5)) +
