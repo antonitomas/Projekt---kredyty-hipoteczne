@@ -250,6 +250,12 @@ p1 <- ggplot(kredyty_inp, aes(x = Education, y = LoanAmount)) +
     x = "Poziom wykształcenia",
     y = "Kwota pożyczki [tys. USD]"
   ) +
+  stat_summary(
+               fun = mean,
+               geom = "point",
+               aes(group = 1),
+               color = "red",
+               size = 3) +
   theme(plot.margin = margin(5,5,5,5)) +
   theme_minimal()
 
@@ -259,6 +265,12 @@ p2 <- ggplot(kredyty_inp, aes(x = Gender, y = LoanAmount)) +
     x = "Płeć",
     y = "Kwota pożyczki [tys. USD]"
   ) +
+  stat_summary(
+               fun = mean,
+               geom = "point",
+               aes(group = 1),
+               color = "red",
+               size = 3) +
   theme(plot.margin = margin(5,5,5,5)) +
   theme_minimal()
 
@@ -268,6 +280,12 @@ p3 <- ggplot(kredyty_inp, aes(x = as.factor(Credit_History), y = LoanAmount)) +
     x = "Historia kredytowa (0 = brak, 1 = dobra)",
     y = "Kwota pożyczki [tys. USD]"
   ) +
+  stat_summary(
+               fun = mean,
+               geom = "point",
+               aes(group = 1),
+               color = "red",
+               size = 3) +
   theme(plot.margin = margin(20,5,5,5)) +
   theme_minimal()
 
@@ -277,6 +295,12 @@ p4 <- ggplot(kredyty_inp, aes(x = Property_Area, y = LoanAmount)) +
     x = "Obszar zamieszkania",
     y = "Kwota pożyczki [tys. USD]"
   ) +
+  stat_summary(
+               fun = mean,
+               geom = "point",
+               aes(group = 1),
+               color = "red",
+               size = 3) +
   theme(plot.margin = margin(20,5,5,5)) +
   theme_minimal()
 
@@ -286,6 +310,12 @@ p5 <- ggplot(kredyty_inp, aes(x = Dependents, y = LoanAmount)) +
     x = "Liczba osób w gospodarstwie",
     y = "Kwota pożyczki [tys. USD]"
   ) +
+  stat_summary(
+               fun = mean,
+               geom = "point",
+               aes(group = 1),
+               color = "red",
+               size = 3) +
   theme(plot.margin = margin(20,5,5,5)) +
   theme_minimal()
 
@@ -295,6 +325,12 @@ p6 <- ggplot(kredyty_inp, aes(x = Married, y = LoanAmount)) +
     x = "Związek małżeński",
     y = "Kwota pożyczki [tys. USD]"
   ) +
+  stat_summary(
+               fun = mean,
+               geom = "point",
+               aes(group = 1),
+               color = "red",
+               size = 3) +
   theme(plot.margin = margin(20,5,5,5)) +
   theme_minimal()
 
