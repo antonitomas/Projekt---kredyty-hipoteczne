@@ -1,8 +1,10 @@
 ---
 title: '
 <img src="logo.png" alt="Logo" width="400px" style="display:block; margin-left:auto; margin-right:0;" />
+<span style="color:navy;">
 <br>
 Analiza danych - kredyty hipoteczne
+</span>
 '
 date: "`r Sys.Date()`"
 authors: "Dominika Zapadka, Agata Witkowska, Mariusz Różek, Antoni Tomas"
@@ -32,6 +34,7 @@ if(!require("knitr")) install.packages("knitr")
 if(!require("kableExtra")) install.packages("kableExtra")
 if(!require("ggplot2")) install.packages("ggplot2")
 if(!require("patchwork")) install.packages("patchwork")
+if(!require("tidyr")) install.packages("tidyr")
 library(finalfit)
 library(Amelia)
 library(mice)
@@ -42,6 +45,9 @@ library(knitr)
 library(kableExtra)
 library(ggplot2)
 library(patchwork)
+library(validate)
+library(VIM)
+library(tidyr)
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 dane <- read_csv("Hipoteczny.csv")
 ```
@@ -76,7 +82,7 @@ Do analizy wykorzystano zbiór danych: [Hipoteczny.csv](https://github.com/anton
 -   **LoanAmount:** kwota pożyczki,
 -   **Loan_Amount_Term:** okres kredytowania,
 -   **Credit_history:** informacja o historii kredytowej,
--   **Property_Area:** obszar pochodzenia klienta,
+-   **Property_Area:** obszar zamieszkania klienta,
 -   **Loan_Status:** wynik decyzji kredytowej (zatwierdzony lub odrzucony).
 
 <p style="text-align: justify;">Zbiór danych nie jest kompletny i część kolumn zawiera braki. Najwięcej braków występuje w zmiennych **Credit_History, LoanAmount, Loan_Amount_Term, Self_Employed, Dependents** oraz częściowo w **Gender** i **Married**. Wstępny przegląd danych pokazuje, że tylko zmienne takie jak dochód czy identyfikator wniosku są pełne, a elementy oceny ryzyka kredytowego wymagają dalszego uzupełnienia.</p>
@@ -136,7 +142,7 @@ missmap(kredyty,
         col = c("lavender", "midnightblue"))
 ```
 
-```{r wizualizacja braków danych 4, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5}
+```{r wizualizacja braków danych 4, fig.align='center', fig.height=5, fig.width=7, message=FALSE, warning=FALSE, include=FALSE}
 invisible(md.pattern(kredyty, rotate.names = TRUE))
 ```
 
@@ -144,53 +150,156 @@ invisible(md.pattern(kredyty, rotate.names = TRUE))
 
 ## Zastępowanie braków danych
 
-<p style="text-align: justify;"><span style="color:navy;">**Hotdeck**</span> - metoda polegająca na zastępowaniu braków danych według wierszy najczęściej się powtarzających (najbardziej prawdopodobny)</p>
+<p style="text-align: justify;"><span style="color:navy;">**Hotdeck**</span> - metoda polegająca na zastępowaniu braków danych według wierszy najczęściej się powtarzających (najbardziej prawdopodobnych).</p>
+
+<p style="text-align: justify;">Po zastosowaniu metody hotdeck zbiór danych nie zawiera brakujących wartości. Zostało to pokazane poniżej za pomocą funkcji sumującej wszystkie braki danych w nowym zbiorze.</p>
 
 ```{r zastępowanie braków danych, message=FALSE, warning=FALSE}
-library(VIM)
 kredyty_inp <- hotdeck(kredyty)
-vis_miss(kredyty_inp, sort_miss = TRUE)
+liczba_brakow <- sum(is.na(kredyty_inp))
+udzial_brakow <- round(liczba_brakow / length(kredyty_inp) * 100, 2)
+tabela2 <- matrix(
+  c(liczba_brakow, paste0(udzial_brakow, "%")),
+  nrow = 1
+)
+colnames(tabela2) <- c("Liczba braków","Udział braków")
+
+kable(tabela2, align = "c") %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  row_spec(0, bold = TRUE, color = "navy")
 ```
 
 ## Reguły zmiennych
 
-Nadano reguły dla zmiennych w celu sprawdzenia poprawności danych po uzupełnieniu braków. Stworzono wykres, który sprawdza, czy dane spełniają ustalone reguły.
+<p style="text-align: justify;">W kolejnym etapie nadano reguły dla zmiennych w celu sprawdzenia poprawności danych po uzupełnieniu braków. Poniżej w tabeli przedstawiono ilość wierszy spełniających i niespełniających poszczególne reguły. Widać w niej, że zbiór danych całkowicie spełnia ustalone reguły.</p>
 
-```{r reguły zmiennych}
-#ustalanie reguł dla zmiennych
-library(validate) 
+```{r reguły zmiennych, fig.align='center', fig.width=7, fig.height=5}
 rules <- validator (
   Dependents >=0,
   Gender %in% c("Male","Female"),
   Married %in% c("Yes","No"),
   Education %in% c("Graduate","Not Graduate"),
   Self_Employed %in% c("Yes","No"),
-  Applicantincome >=0,
-  Coapplicantincome >=0,
+  ApplicantIncome >=0,
+  CoapplicantIncome >=0,
   LoanAmount >=0,
   Loan_Amount_Term >=0,
   Loan_Amount_Term %% 6 == 0,
   Property_Area %in% c("Urban","Semiurban","Rural"),
   Loan_Status %in% c("Y","N"),
-  Credit_history %in% c(0,1)
+  Credit_History %in% c(0,1)
 )
 cf <- confront(kredyty_inp, rules, key="Loan_ID")
-summary(cf)
-barplot(cf, main="kredyty_inp")
-#as.data.frame(cf) %>% head()
+summary_df <- as.data.frame(summary(cf))
+summary_df <- summary_df[, c("name", "passes", "fails")]
+colnames(summary_df) <- c("Nazwa", "Spełnione", "Niespełnione")
+summary_df$Reguła <- c("Liczba osóba na utrzymaniu musi być większa lub równa 0", 
+                       "Płeć przyjmuje tylko wartości Male/Female", 
+                       "Status cywilny przyjmuje tylko wartości Yes/No", 
+                       "Wykształcenie przyjmuje tylko wartości Graduate/Not Graduate", 
+                       "Samozatrudnienie przyjmuje tylko wartości Yes/No", 
+                       "Dochód wnioskodawcy musi być większy lub równy 0", 
+                       "Dochód współwnioskodawcy musi być większy lub równy 0", 
+                       "Kwota pożyczki musi być większa lub równa 0", 
+                       "Okres kredytowania musi być większy lub równy 0", 
+                       "Okres kredytowania musi być podzielny bez reszty przez 6",
+                       "Miejsce zamieszkania przyjmuje tylko wartości Urban/Semiurban/Rural", 
+                       "Status wniosku przyjmuje tylko wartości Y/N", 
+                       "Historia kredytowa przyjmuje tylko wartości 0 lub 1")
+kable(summary_df, align = c("c","c","c","l")) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  row_spec(0, bold = TRUE, color = "navy")
+```
+
+<p style="text-align: justify;">W celu potwierdzenia utworzono wykres, który również sprawdza, czy dane spełniają ustalone reguły.</p>
+
+<p style="text-align: center;"><span style="color:navy;">**Wykres spełnienia reguł**</span></p>
+
+```{r reguły zmiennych 2, fig.align='center', fig.width=7, fig.height=5}
+df <- as.data.frame(cf)
+ggplot(df, aes(y = name, fill = factor(value))) +
+  geom_bar(position = "stack") +
+  scale_fill_manual(
+    values = c("TRUE" = "navy", "FALSE" = "orchid", "NA" = "lavender"),
+    labels = c("TRUE" = "Spełnione", "FALSE" = "Niespełnione", "NA" = "Braki danych")
+  ) +
+  labs(
+    y = "Reguła",
+    x = "Liczba rekordów",
+    fill = "Status"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.title.y = element_text(margin = margin(r = 10))
+  )
 ```
 
 ## Duplikaty
-Dane nie posiadają duplikatów, obserwacje są unikalne i nie ma potrzeby dodatkowego czyszczenia pod kątem prawidłowości struktury danych. 
+
+<p style="text-align: justify;">Dane nie posiadają duplikatów, obserwacje są unikalne i nie ma potrzeby dodatkowego czyszczenia pod kątem prawidłowości struktury danych</p>
+
 ```{r}
-sum(duplicated(kredyty_inp))
+liczba_duplikatow <- sum(duplicated(kredyty_inp))
+udzial_duplikatow <- round(liczba_duplikatow / length(kredyty_inp) * 100, 2)
+tabela2 <- matrix(
+  c(liczba_duplikatow, paste0(udzial_duplikatow, "%")),
+  nrow = 1
+)
+colnames(tabela2) <- c("Liczba duplikatów","Udział duplikatów")
+
+kable(tabela2, align = "c") %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  row_spec(0, bold = TRUE, color = "navy")
 ```
 
 # **Wizualizacja danych**
 
-## Wykresy słupkowe
+## Wykres kołowy
 
-Czy miejsce zamieszkania wpływa na decyzję o przyznaniu kredytu?
+<p style="text-align: center;"><span style="color:navy;">**Rozkład statusów decyzji kredytowych**</span></p>
+
+```{r, fig.align='center', fig.width=7, fig.height=5}
+max_income <- 20000
+max_loan_amount <- 300
+
+filtered_data <- kredyty_inp %>%
+    filter(ApplicantIncome <= max_income) %>%
+    filter(LoanAmount <= max_loan_amount)
+
+counts_summary <- filtered_data %>%
+    count(Loan_Status)
+
+kolowy <- data.frame(
+  Loan_Status = c("N", "Y"),
+  n = c(177, 401)
+)
+
+kolowy2 <- kolowy %>%
+  mutate(
+    total = sum(n),
+    percentage = (n / total) * 100
+  )
+
+ggplot(kolowy2, aes(x = "", y = percentage, fill = Loan_Status)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) + 
+  scale_fill_manual(values = c("N" = "orchid", "Y" = "navy")) + 
+  theme_void() + 
+  labs(fill = "Status pożyczki") +
+  geom_text(
+    aes(label = paste0(round(percentage, 1), "%\n(", n, ")")),
+    position = position_stack(vjust = 0.5),
+    color = "lavender",
+    size = 5
+  ) +
+  theme(
+    legend.position = "right"
+  )
+```
+
+<p style="text-align: justify;">Wykres pokazuje, że większość wniosków kredytowych zakończyła się pozytywną decyzją - około 69% stanowią zgody na udzielenie pożyczki. Odmowy stanowią natomiast około 31% wszystkich przypadków.</p>
+
+## Wykresy słupkowe
 
 <p style="text-align: center;"><span style="color:navy;">**Udział decyzji kredytowych w zależności od obszaru zamieszkania**</span></p>
 
@@ -241,6 +350,8 @@ ggplot(kredyty_inp, aes(x = as.factor(Education), fill = Loan_Status)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
+<p style="text-align: justify;">Wykres pokazuje, że osoby z wykształceniem częściej otrzymują zgodę na udzielenie kredytu niż osoby bez wykształcenia. Jednocześnie w grupie bez wykształcenia odsetek odmów jest wyraźnie większy.</p>
+
 ## Wykresy pudełkowe
 
 ```{r, fig.align='center', fig.width=7, fig.height=8}
@@ -254,7 +365,7 @@ p1 <- ggplot(kredyty_inp, aes(x = Education, y = LoanAmount)) +
                fun = mean,
                geom = "point",
                aes(group = 1),
-               color = "red",
+               color = "orchid",
                size = 3) +
   theme(plot.margin = margin(5,5,5,5)) +
   theme_minimal()
@@ -269,7 +380,7 @@ p2 <- ggplot(kredyty_inp, aes(x = Gender, y = LoanAmount)) +
                fun = mean,
                geom = "point",
                aes(group = 1),
-               color = "red",
+               color = "orchid",
                size = 3) +
   theme(plot.margin = margin(5,5,5,5)) +
   theme_minimal()
@@ -284,7 +395,7 @@ p3 <- ggplot(kredyty_inp, aes(x = as.factor(Credit_History), y = LoanAmount)) +
                fun = mean,
                geom = "point",
                aes(group = 1),
-               color = "red",
+               color = "orchid",
                size = 3) +
   theme(plot.margin = margin(20,5,5,5)) +
   theme_minimal()
@@ -299,7 +410,7 @@ p4 <- ggplot(kredyty_inp, aes(x = Property_Area, y = LoanAmount)) +
                fun = mean,
                geom = "point",
                aes(group = 1),
-               color = "red",
+               color = "orchid",
                size = 3) +
   theme(plot.margin = margin(20,5,5,5)) +
   theme_minimal()
@@ -314,7 +425,7 @@ p5 <- ggplot(kredyty_inp, aes(x = Dependents, y = LoanAmount)) +
                fun = mean,
                geom = "point",
                aes(group = 1),
-               color = "red",
+               color = "orchid",
                size = 3) +
   theme(plot.margin = margin(20,5,5,5)) +
   theme_minimal()
@@ -329,7 +440,7 @@ p6 <- ggplot(kredyty_inp, aes(x = Married, y = LoanAmount)) +
                fun = mean,
                geom = "point",
                aes(group = 1),
-               color = "red",
+               color = "orchid",
                size = 3) +
   theme(plot.margin = margin(20,5,5,5)) +
   theme_minimal()
@@ -387,6 +498,8 @@ ggplot(data = macierz_korelacji, aes(x = Var1, y = Var2, fill = value)) +
 
 ```
 
+<p style="text-align: justify;">Wykres korelacji pokazuje, że najsilniejsza zależność występuje między dochodem wnioskodawcy a kwotą pożyczki (umiarkowana dodatnia korelacja). Pozostałe zmienne, w tym historia kredytowa i okres pożyczki, są ze sobą bardzo słabo skorelowane lub praktycznie niezależne.</p>
+
 ## Wykres punktowy
 
 <p style="text-align: center;"><span style="color:navy;">**Zależność między dochodem wnioskodawcy a kwotą pożyczki**</span></p>
@@ -409,48 +522,4 @@ ggplot(data = filtered_data, aes(x = Income, y = LoanAmount, color = Loan_Status
 
 <p style="text-align: justify;">Zdecydowana większość wniosków kredytowych koncentruje się w obszarze niskich dochodów - poniżej 20 000 USD oraz niskich kwot pożyczek, czyli tych o kwotach poniżej 300 tys. USD. Powyższy wykres wskazuje zatem, że dochód i kwota pożyczki nie są jedynymi czynnikami decyzyjnymi, ponieważ w określonym obszarze występują zarówno wnioski przyjęte, jak i odrzucone.</p>
 
-## Wykres kołowy
-
-<p style="text-align: center;"><span style="color:navy;">**Rozkład statusów decyzji kredytowych**</span></p>
-
-```{r, fig.align='center', fig.width=7, fig.height=5}
-max_income <- 20000
-max_loan_amount <- 300
-
-filtered_data <- kredyty_inp %>%
-    filter(ApplicantIncome <= max_income) %>%
-    filter(LoanAmount <= max_loan_amount)
-
-counts_summary <- filtered_data %>%
-    count(Loan_Status)
-
-kolowy <- data.frame(
-  Loan_Status = c("N", "Y"),
-  n = c(177, 401)
-)
-
-kolowy2 <- kolowy %>%
-  mutate(
-    total = sum(n),
-    percentage = (n / total) * 100
-  )
-
-ggplot(kolowy2, aes(x = "", y = percentage, fill = Loan_Status)) +
-  geom_bar(width = 1, stat = "identity", color = "white") +
-  coord_polar("y", start = 0) + 
-  scale_fill_manual(values = c("N" = "orchid", "Y" = "navy")) + 
-  theme_void() + 
-  labs(fill = "Status pożyczki") +
-  geom_text(
-    aes(label = paste0(round(percentage, 1), "%\n(", n, ")")),
-    position = position_stack(vjust = 0.5),
-    color = "lavender",
-    size = 5
-  ) +
-  theme(
-    legend.position = "right"
-  )
-
-# albo w ggpie
-```
-
+# **Analiza opisowa**
