@@ -649,6 +649,9 @@ statystyki_opisowe <- t(sapply(zmienne, function(x) {
     Mediana = median(x),
     Minimum = min(x),
     Maksimum = max(x),
+    Rozstęp = max(x, na.rm = TRUE) - min(x, na.rm = TRUE),
+    `Rozstęp międzykwartylowy` = IQR(x, na.rm = TRUE),
+    Wariancja = var(x, na.rm = TRUE),
     `Odchylenie standardowe` = sd(x),
     `Współczynnik zmienności (%)` = sd(x) / mean(x) * 100
   )
@@ -671,7 +674,7 @@ kable(statystyki_opisowe, digits = 2, align = "c") %>%
 
 <p style="text-align: justify;">
 
-Analiza statystyk opisowych wskazuje na duże zróżnicowanie dochodów wśród wnioskodawców. Jego średni dochód wynosi około 5403 USD. Mediana natomiast kształtuje się na poziomie 3813 USD. Różnica pomiędzy średnią a medianą może sugerować prawostronną asymetrię rozkładu dochodów. Oznacza to, że część obserwacji o bardzo wysokich dochodach zawyża wartość średnią. Minimalny dochód wynosi 150 USD, a maksymalny aż 81000 USD, co również potwierdza dużą rozpiętość danych.
+Analiza statystyk opisowych wskazuje na duże zróżnicowanie dochodów wśród wnioskodawców. Ich średni dochód wynosi około 5403 USD. Mediana natomiast kształtuje się na poziomie 3813 USD. Różnica pomiędzy średnią a medianą może sugerować prawostronną asymetrię rozkładu dochodów. Oznacza to, że część obserwacji o bardzo wysokich dochodach zawyża wartość średnią. Minimalny dochód wynosi 150 USD, a maksymalny aż 81000 USD. To również potwierdza dużą rozpiętość danych.
 
 <p style="text-align: justify;">
 
@@ -683,11 +686,15 @@ Dochody współwnioskodawców są przeciętnie znacznie niższe. Ich średnia wy
 
 <p style="text-align: justify;">
 
-Okres kredytowania ma mniejsze zróżnicowanie w porównaniu do pozostałych zmiennych. Średni okres spłaty wynosi około 342 miesiące, a mediana równa jest 360 miesiącom, co oznacza, że najczęściej spotykanym okresem kredytowania jest 30 lat. Odchylenie standardowe na poziomie 65 miesięcy wskazuje na umiarkowaną zmienność tej zmiennej, a zakres od 12 do 480 miesięcy wskazuje na istnienie zarówno krótkoterminowych, jak i długoterminowych umów kredytowych.
+Okres kredytowania ma mniejsze zróżnicowanie w porównaniu do pozostałych zmiennych. Średni okres spłaty wynosi około 342 miesiące, a mediana równa jest 360 miesiącom, więc najczęściej spotykanym okresem kredytowania jest 30 lat. Odchylenie standardowe na poziomie 65 miesięcy świadczy o umiarkowanej zmienności tej zmiennej, a zakres od 12 do 480 miesięcy wskazuje na istnienie zarówno krótkoterminowych, jak i długoterminowych umów kredytowych.
 
 <p style="text-align: justify;">
 
-Współczynnik zmienności wskazuje na bardzo duże zróżnicowanie dochodów w badanej próbie. Najwyższą zmienność ma dochód współwnioskodawcy (180,49%), co świadczy o silnej heterogeniczności tej zmiennej. Dochód głównego wnioskodawcy także cechuje się bardzo wysokim współczynnikiem zmienności (113,06%). Kwota kredytu wykazuje umiarkowane zróżnicowanie (58,99%), natomiast najmniejszą zmiennością charakteryzuje się okres kredytowania (18,93%).
+Dla dochodu wnioskodawcy rozstęp wynosi 80 850, a wariancja 37 320 390,17. Jest to bardzo szeroki zakres obserwowanych wartości oraz występują pomiędzy nimi znaczne różnice. Jednocześnie wysoki rozstęp międzykwartylowy (2 917,50) sugeruje, że nawet w centralnej części rozkładu zmienność dochodów jest duża. Podobnie, ale w mniejszym stopniu, zróżnicowany jest dochód współwnioskodawcy, dla którego rozstęp wynosi 41 667, a wariancja 8 562 929,52. Wartość rozstępu międzykwartylowego (2 297,25) pokazuje istotne zróżnicowanie dochodów wśród środkowych 50% obserwacji. W przypadku kwoty kredytu rozstęp wynosi 691, a rozstęp międzykwartylowy 68. Połowa obserwacji mieści się w wąskim przedziale wartości, mimo występowania obserwacji skrajnych, które zwiększają całkowity rozstęp i wariancję. Okres spłaty kredytu ma rozstęp równy 468, jednak rozstęp międzykwartylowy wynosi 0, co oznacza, że co najmniej 50% kredytów posiada identyczny okres spłaty (najczęściej 360 miesięcy). Wskazuje to na silną koncentrację obserwacji wokół jednej wartości oraz niewielkie zróżnicowanie w centralnej części rozkładu, mimo obecności wartości skrajnych.
+
+<p style="text-align: justify;">
+
+Współczynnik zmienności pokazuje bardzo duże zróżnicowanie dochodów w badanej próbie. Najwyższą zmienność ma dochód współwnioskodawcy (180,49%), co świadczy o silnej heterogeniczności tej zmiennej. Dochód głównego wnioskodawcy także cechuje się bardzo wysokim współczynnikiem zmienności (113,06%). Kwota kredytu wykazuje umiarkowane zróżnicowanie (58,99%), natomiast najmniejszą zmienność ma okres kredytowania (18,93%).
 
 </p>
 
@@ -722,15 +729,15 @@ kable(asymetria_kurtoza, digits = 2, align = "c") %>%
 
 <p style="text-align: justify;">
 
-Współczynnik asymetrii dla dochodów wnioskodawców wynosi 6,51, co potwierdza silną asymetrię prawostronną rozkładu, opisywaną już w miarach położenia i zróżnicowania zmiennych ilościowych. Oznacza to, że większość obserwacji skupiona jest na niskich wartościach dochodu, natomiast występują nieliczne, lecz bardzo wysokie dochody, które wydłużają prawy ogon rozkładu. Kurtoza na poziomie 59,83 świadczy o rozkładzie charakteryzującym się obecnością obserwacji odstających.
+Współczynnik asymetrii dla dochodów wnioskodawców wynosi 6,51, co potwierdza silną asymetrię prawostronną rozkładu, opisywaną już w miarach położenia i zróżnicowania zmiennych ilościowych. Większość obserwacji skupiona jest na niskich wartościach dochodu, natomiast występują nieliczne, lecz bardzo wysokie dochody, które wydłużają prawy ogon rozkładu. Kurtoza na poziomie 59,83 świadczy o rozkładzie leptokurtycznym, charakteryzującym się obecnością obserwacji odstających.
 
 <p style="text-align: justify;">
 
-Zmienna dochody współwnioskodawców charakteryzuje się asymetrią prawostronną o wartości 7,45, jeszcze silniejszą niż w przypadku dochodu głównego wnioskodawcy. Oznacza to, że zdecydowana większość współwnioskodawców osiąga niskie lub zerowe dochody, natomiast niewielka liczba obserwacji przyjmuje bardzo wysokie wartości. Kurtoza równa 83,97 potwierdza silną koncentrację danych wokół niskich wartości oraz obecność bardzo silnych obserwacji odstających.
+Zmienna dochody współwnioskodawców ma asymetrię prawostronną o wartości 7,45, jeszcze silniejszą niż w przypadku dochodu głównego wnioskodawcy. Oznacza to, że zdecydowana większość współwnioskodawców osiąga niskie lub zerowe dochody, natomiast niewielka liczba obserwacji przyjmuje bardzo wysokie wartości. Kurtoza równa 83,97 potwierdza silną koncentrację danych wokół niskich wartości oraz obecność bardzo silnych obserwacji odstających.
 
 <p style="text-align: justify;">
 
-Dla kwoty pożyczki współczynnik asymetrii wynosi 2,63, co oznacza umiarkowaną asymetrię prawostronną. Rozkład kwot kredytu jest mniej skośny niż rozkłady dochodów, jednak nadal dominuje przewaga niższych kwot kredytów przy występowaniu większych wartości skrajnych. Kurtoza na poziomie 9,87 wskazuje na większą koncentrację obserwacji wokół wartości centralnych oraz obecność obserwacji odstających.
+Dla kwoty pożyczki współczynnik asymetrii wynosi 2,63, co wskazuje na umiarkowaną asymetrię prawostronną. Rozkład kwot kredytu jest mniej skośny niż rozkłady dochodów, jednak nadal dominują niższe kwoty kredytów przy występowaniu większych wartości skrajnych. Kurtoza na poziomie 9,87 wskazuje na większą koncentrację obserwacji wokół wartości centralnych oraz obecność obserwacji odstających.
 
 <p style="text-align: justify;">
 
@@ -743,3 +750,49 @@ Wszystkie analizowane zmienne charakteryzują się znacznym odejściem od rozkł
 </p>
 
 ## Analiza korelacji 
+```{r}
+macierz_korelacji <- round(cor(zmienne, method = "pearson"), 2)
+
+rownames(macierz_korelacji) <- c(
+  "Applicant Income",
+  "Coapplicant Income",
+  "Loan Amount",
+  "Loan Amount Term"
+)
+
+colnames(macierz_korelacji) <- c(
+  "Applicant Income",
+  "Coapplicant Income",
+  "Loan Amount",
+  "Loan Amount Term"
+)
+
+kable(
+  macierz_korelacji,
+  align = "c"
+) %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  row_spec(0, bold = TRUE, color = "navy") %>%
+  column_spec(1, bold = TRUE, color = "navy")
+
+```
+
+<p style="text-align: justify;">
+
+**Klasyfikacja siły korelacji**: 
+
+<p style="text-align: justify;">
+
+|r| < 0,3 - słaba korelacja 
+
+<p style="text-align: justify;">
+
+0,3 ≤ |r| ≤ 0,7 - umiarkowana korelacja 
+
+<p style="text-align: justify;">
+
+|r| ≥ 0,7 - silna korelacja
+
+<p style="text-align: justify;">
+
+Na podstawie przeprowadzonej analizy korelacji Pearsona można stwierdzić, że zależności pomiędzy analizowanymi zmiennymi ilościowymi są zróżnicowane pod względem siły i kierunku. Najsilniejszą zależność zaobserwowano pomiędzy dochodem wnioskodawcy a kwotą kredytu, dla której współczynnik korelacji wynosi 0,55. Wskazuje to na umiarkowaną dodatnią korelację: wraz ze wzrostem dochodu głównego wnioskodawcy rośnie przeciętnie kwota zaciąganego kredytu. Zależność pomiędzy dochodem współwnioskodawcy a kwotą kredytu jest słaba i dodatnia: r = 0,18. Dochód współwnioskodawcy ma mniejsze znaczenie przy ustalaniu wysokości kredytu niż dochód głównego wnioskodawcy. Korelacje pomiędzy dochodami wnioskodawców a okresem spłaty kredytu są bardzo słabe i bliskie zeru, od –0,06 do 0,03. Brak jest więc istotnej zależności liniowej pomiędzy tymi zmiennymi. Ponadto, korelacja pomiędzy dochodem wnioskodawcy a dochodem współwnioskodawcy jest słaba i ujemna: r = –0,12. Zmienne te nie wykazują istotnej współzależności.
