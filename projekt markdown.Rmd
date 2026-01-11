@@ -35,6 +35,7 @@ if(!require("kableExtra")) install.packages("kableExtra")
 if(!require("ggplot2")) install.packages("ggplot2")
 if(!require("patchwork")) install.packages("patchwork")
 if(!require("tidyr")) install.packages("tidyr")
+if(!require("e1071")) install.packages("e1071")
 library(finalfit)
 library(Amelia)
 library(mice)
@@ -48,6 +49,7 @@ library(patchwork)
 library(validate)
 library(VIM)
 library(tidyr)
+library(e1071)
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 dane <- read_csv("Hipoteczny.csv")
 ```
@@ -633,7 +635,7 @@ Zdecydowana większość wniosków kredytowych koncentruje się w obszarze niski
 
 # **Analiza opisowa**
 
-## Statystyki opisowe zmiennych numerycznych
+## Miary położenia i zróżnicowania zmiennych ilościowych 
 
 ```{r}
 zmienne <- kredyty_inp[, c("ApplicantIncome",
@@ -647,7 +649,8 @@ statystyki_opisowe <- t(sapply(zmienne, function(x) {
     Mediana = median(x),
     Minimum = min(x),
     Maksimum = max(x),
-    `Odchylenie standardowe` = sd(x)
+    `Odchylenie standardowe` = sd(x),
+    `Współczynnik zmienności (%)` = sd(x) / mean(x) * 100
   )
 }))
 
@@ -682,8 +685,61 @@ Dochody współwnioskodawców są przeciętnie znacznie niższe. Ich średnia wy
 
 Okres kredytowania ma mniejsze zróżnicowanie w porównaniu do pozostałych zmiennych. Średni okres spłaty wynosi około 342 miesiące, a mediana równa jest 360 miesiącom, co oznacza, że najczęściej spotykanym okresem kredytowania jest 30 lat. Odchylenie standardowe na poziomie 65 miesięcy wskazuje na umiarkowaną zmienność tej zmiennej, a zakres od 12 do 480 miesięcy wskazuje na istnienie zarówno krótkoterminowych, jak i długoterminowych umów kredytowych.
 
+<p style="text-align: justify;">
+
+Współczynnik zmienności wskazuje na bardzo duże zróżnicowanie dochodów w badanej próbie. Najwyższą zmienność ma dochód współwnioskodawcy (180,49%), co świadczy o silnej heterogeniczności tej zmiennej. Dochód głównego wnioskodawcy także cechuje się bardzo wysokim współczynnikiem zmienności (113,06%). Kwota kredytu wykazuje umiarkowane zróżnicowanie (58,99%), natomiast najmniejszą zmiennością charakteryzuje się okres kredytowania (18,93%).
+
 </p>
 
-## Statystyki opisowe dla zmiennych jakościowych
+## Miary asymetrii i kurtozy
 
+```{r}
+zmienne <- kredyty_inp[, c("ApplicantIncome",
+                           "CoapplicantIncome",
+                           "LoanAmount",
+                           "Loan_Amount_Term")]
 
+asymetria_kurtoza <- t(sapply(zmienne, function(x) {
+  c(
+    Asymetria = skewness(x),
+    Kurtoza = kurtosis(x)
+  )
+}))
+
+asymetria_kurtoza <- as.data.frame(asymetria_kurtoza)
+
+rownames(asymetria_kurtoza) <- c(
+  "Applicant Income",
+  "Coapplicant Income",
+  "Loan Amount",
+  "Loan Amount Term"
+)
+
+kable(asymetria_kurtoza, digits = 2, align = "c") %>%
+  kable_styling(full_width = FALSE, position = "center") %>%
+  row_spec(0, bold = TRUE, color = "navy")
+```
+
+<p style="text-align: justify;">
+
+Współczynnik asymetrii dla dochodów wnioskodawców wynosi 6,51, co potwierdza silną asymetrię prawostronną rozkładu, opisywaną już w miarach położenia i zróżnicowania zmiennych ilościowych. Oznacza to, że większość obserwacji skupiona jest na niskich wartościach dochodu, natomiast występują nieliczne, lecz bardzo wysokie dochody, które wydłużają prawy ogon rozkładu. Kurtoza na poziomie 59,83 świadczy o rozkładzie charakteryzującym się obecnością obserwacji odstających.
+
+<p style="text-align: justify;">
+
+Zmienna dochody współwnioskodawców charakteryzuje się asymetrią prawostronną o wartości 7,45, jeszcze silniejszą niż w przypadku dochodu głównego wnioskodawcy. Oznacza to, że zdecydowana większość współwnioskodawców osiąga niskie lub zerowe dochody, natomiast niewielka liczba obserwacji przyjmuje bardzo wysokie wartości. Kurtoza równa 83,97 potwierdza silną koncentrację danych wokół niskich wartości oraz obecność bardzo silnych obserwacji odstających.
+
+<p style="text-align: justify;">
+
+Dla kwoty pożyczki współczynnik asymetrii wynosi 2,63, co oznacza umiarkowaną asymetrię prawostronną. Rozkład kwot kredytu jest mniej skośny niż rozkłady dochodów, jednak nadal dominuje przewaga niższych kwot kredytów przy występowaniu większych wartości skrajnych. Kurtoza na poziomie 9,87 wskazuje na większą koncentrację obserwacji wokół wartości centralnych oraz obecność obserwacji odstających.
+
+<p style="text-align: justify;">
+
+Okres kredytowania charakteryzuje się asymetrią lewostronną (–2,35). Większość okresów kredytowania koncentruje się na dłuższych terminach, natomiast krótsze okresy występują rzadziej. Kurtoza równa 6,72 sugeruje koncentrację obserwacji wokół typowych długości okresów kredytowania oraz ograniczoną, lecz wyraźną liczbę wartości odstających.
+
+<p style="text-align: justify;">
+
+Wszystkie analizowane zmienne charakteryzują się znacznym odejściem od rozkładu normalnego, szczególnie w przypadku zmiennych dochodowych, które wykazują silną asymetrię prawostronną oraz bardzo wysoką kurtozę.
+
+</p>
+
+## Analiza korelacji 
