@@ -66,21 +66,13 @@ body {
 
 ## Opis problemu
 
-<p style="text-align: justify;">
-
-Celem projektu jest przeprowadzenie analizy danych dotyczących zatwierdzenia kredytu mieszkaniowego i określenie, które czynniki w największym stopniu wpływają na decyzję o przyznaniu pożyczki. Firma, której dane analizujemy obsługuje klientów z obszarów miejskich, półmiejskich i wiejskich, a proces wnioskowania odbywa się za pomocą wypełnienia formularza online przez klienta. Aby przyspieszyć podejmowanie decyzji i zwiększyć efektywność obsługi, przedsiębiorstwo planuje automatyzację procesu oceny zdolności kredytowej w czasie rzeczywistym.
-
-</p>
+<p style="text-align: justify;">Celem projektu jest przeprowadzenie analizy danych dotyczących zatwierdzenia kredytu mieszkaniowego i określenie, które czynniki w największym stopniu wpływają na decyzję o przyznaniu pożyczki. Firma, której dane analizujemy obsługuje klientów z obszarów miejskich, półmiejskich i wiejskich, a proces wnioskowania odbywa się za pomocą wypełnienia formularza online przez klienta. Aby przyspieszyć podejmowanie decyzji i zwiększyć efektywność obsługi, przedsiębiorstwo planuje automatyzację procesu oceny zdolności kredytowej w czasie rzeczywistym.</p>
 
 ## Dane
 
 Do analizy wykorzystano zbiór danych: [Hipoteczny.csv](https://github.com/antonitomas/Projekt---kredyty-hipoteczne/blob/main/Hipoteczny.csv){style="color:navy"}.
 
-<p style="text-align: justify;">
-
-Obejmuje on 614 obserwacji. Dane pochodzą z procesu składania wniosków kredytowych i zawierają informacje o wnioskodawcy i charakterystyce pożyczki. Wśród dostępnych kolumn znajdują się między innymi:
-
-</p>
+<p style="text-align: justify;">Obejmuje on 614 obserwacji. Dane pochodzą z procesu składania wniosków kredytowych i zawierają informacje o wnioskodawcy i charakterystyce pożyczki. Wśród dostępnych kolumn znajdują się między innymi:</p>
 
 -   **Loan_ID:** identyfikator wniosku,
 -   **Gender:** płeć wnioskodawcy,
@@ -95,19 +87,11 @@ Obejmuje on 614 obserwacji. Dane pochodzą z procesu składania wniosków kredyt
 -   **Property_Area:** obszar zamieszkania klienta,
 -   **Loan_Status:** wynik decyzji kredytowej (zatwierdzony lub odrzucony).
 
-<p style="text-align: justify;">
-
-Zbiór danych nie jest kompletny i część kolumn zawiera braki. Najwięcej braków występuje w zmiennych **Credit_History, LoanAmount, Loan_Amount_Term, Self_Employed, Dependents** oraz częściowo w **Gender** i **Married**. Wstępny przegląd danych pokazuje, że tylko zmienne takie jak dochód czy identyfikator wniosku są pełne, a elementy oceny ryzyka kredytowego wymagają dalszego uzupełnienia.
-
-</p>
+<p style="text-align: justify;">Zbiór danych nie jest kompletny i część kolumn zawiera braki. Najwięcej braków występuje w zmiennych **Credit_History, LoanAmount, Loan_Amount_Term, Self_Employed, Dependents** oraz częściowo w **Gender** i **Married**. Wstępny przegląd danych pokazuje, że tylko zmienne takie jak dochód czy identyfikator wniosku są pełne, a elementy oceny ryzyka kredytowego wymagają dalszego uzupełnienia.</p>
 
 ## Przebieg analizy
 
-<p style="text-align: justify;">
-
-Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wiążą się z przyznaniem lub odrzuceniem kredytu i przygotowaniu modelu, który mógłby automatycznie wskazywać potencjalnie kwalifikujących się wnioskdawców. Wykonamy wstępne oczyszczanie danych, eksplorację, wizualizację i przeprowadzimy analizę jedno oraz dwuwymiarową. Wnioski z analizy pomogą usprawnić proces oceny wniosków kredytowych oraz poprawić skuteczność i spójność decyzji podejmowanych przez firmę.
-
-</p>
+<p style="text-align: justify;">Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wiążą się z przyznaniem lub odrzuceniem kredytu i przygotowaniu modelu, który mógłby automatycznie wskazywać potencjalnie kwalifikujących się wnioskdawców. Wykonamy wstępne oczyszczanie danych, eksplorację, wizualizację i przeprowadzimy analizę jedno oraz dwuwymiarową. Wnioski z analizy pomogą usprawnić proces oceny wniosków kredytowych oraz poprawić skuteczność i spójność decyzji podejmowanych przez firmę.</p>
 
 # **Przygotowanie danych**
 
@@ -128,17 +112,9 @@ kable(tabela1, align = "c") %>%
   row_spec(0, bold = TRUE, color = "navy")
 ```
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">Największą liczbę brakujących danych zawierają kolejno zmienne: [Credit_History]{style="color:navy;"} (50 braków danych), [Self_Employed]{style="color:navy;"} (32 braki danych) oraz [LoanAmount]{style="color:navy;"} (22 braki danych).</p>
 
-Największą liczbę brakujących danych zawierają kolejno zmienne: [Credit_History]{style="color:navy;"} (50 braków danych), [Self_Employed]{style="color:navy;"} (32 braki danych) oraz [LoanAmount]{style="color:navy;"} (22 braki danych).
-
-</p>
-
-<p style="text-align: center;">
-
-[**Braki danych według liczby osób na utrzymaniu**]{style="color:navy;"}
-
-</p>
+<p style="text-align: center;">[**Braki danych według liczby osób na utrzymaniu**]{style="color:navy;"}</p>
 
 ```{r wizualizacja braków danych 1, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5}
 gg_miss_fct(kredyty, Dependents) +
@@ -151,21 +127,13 @@ gg_miss_fct(kredyty, Dependents) +
   scale_fill_gradient(low="lavender", high="navy")
 ```
 
-<p style="text-align: justify;">
-
-Na podstawie heatmapy można stwierdzić nielosowość brakujących danych. Widać to na podstawie dużego natężenia braków danych w zmiennej określającej stan cywilny klienta ([Married]{style="color:navy;"}), w sytuacji gdy nie podał on również liczby osób na swoim utrzymaniu ([Dependents]{style="color:navy;"}).
-
-</p>
+<p style="text-align: justify;">Na podstawie heatmapy można stwierdzić nielosowość brakujących danych. Widać to na podstawie dużego natężenia braków danych w zmiennej określającej stan cywilny klienta ([Married]{style="color:navy;"}), w sytuacji gdy nie podał on również liczby osób na swoim utrzymaniu ([Dependents]{style="color:navy;"}).</p>
 
 ```{r wizualizacja braków danych 2, message=FALSE, warning=FALSE, include=FALSE}
 gg_miss_upset(kredyty)
 ```
 
-<p style="text-align: center;">
-
-[**Mapa braków danych**]{style="color:navy;"}
-
-</p>
+<p style="text-align: center;">[**Mapa braków danych**]{style="color:navy;"}</p>
 
 ```{r wizualizacja braków danych 3, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5}
 missmap(kredyty,
@@ -177,25 +145,13 @@ missmap(kredyty,
 invisible(md.pattern(kredyty, rotate.names = TRUE))
 ```
 
-<p style="text-align: justify;">
-
-Dane zawierają 2% braków danych ([missmap]{style="color:navy;"}), a braki te nie są zależne między sobą ([md.pattern]{style="color:navy;"}). W celu zastąpienia braków danych można wykorzystać proste metody: mediana, średnia, dominanta lub użyć funkcji hotdeck.
-
-</p>
+<p style="text-align: justify;">Dane zawierają 2% braków danych ([missmap]{style="color:navy;"}), a braki te nie są zależne między sobą ([md.pattern]{style="color:navy;"}). W celu zastąpienia braków danych można wykorzystać proste metody: mediana, średnia, dominanta lub użyć funkcji hotdeck.</p>
 
 ## Zastępowanie braków danych
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">[**Hotdeck**]{style="color:navy;"} - metoda polegająca na zastępowaniu braków danych według wierszy najczęściej się powtarzających (najbardziej prawdopodobnych).</p>
 
-[**Hotdeck**]{style="color:navy;"} - metoda polegająca na zastępowaniu braków danych według wierszy najczęściej się powtarzających (najbardziej prawdopodobnych).
-
-</p>
-
-<p style="text-align: justify;">
-
-Po zastosowaniu metody hotdeck zbiór danych nie zawiera brakujących wartości. Zostało to pokazane poniżej za pomocą funkcji sumującej wszystkie braki danych w nowym zbiorze.
-
-</p>
+<p style="text-align: justify;">Po zastosowaniu metody hotdeck zbiór danych nie zawiera brakujących wartości. Zostało to pokazane poniżej za pomocą funkcji sumującej wszystkie braki danych w nowym zbiorze.</p>
 
 ```{r zastępowanie braków danych, message=FALSE, warning=FALSE}
 kredyty_inp <- hotdeck(kredyty)
@@ -214,11 +170,7 @@ kable(tabela2, align = "c") %>%
 
 ## Reguły zmiennych
 
-<p style="text-align: justify;">
-
-W kolejnym etapie nadano reguły dla zmiennych w celu sprawdzenia poprawności danych po uzupełnieniu braków. Poniżej w tabeli przedstawiono ilość wierszy spełniających i niespełniających poszczególne reguły. Widać w niej, że zbiór danych całkowicie spełnia ustalone reguły.
-
-</p>
+<p style="text-align: justify;">W kolejnym etapie nadano reguły dla zmiennych w celu sprawdzenia poprawności danych po uzupełnieniu braków. Poniżej w tabeli przedstawiono ilość wierszy spełniających i niespełniających poszczególne reguły. Widać w niej, że zbiór danych całkowicie spełnia ustalone reguły.</p>
 
 ```{r reguły zmiennych, fig.align='center', fig.width=7, fig.height=5}
 rules <- validator (
@@ -258,17 +210,9 @@ kable(summary_df, align = c("c","c","c","l")) %>%
   row_spec(0, bold = TRUE, color = "navy")
 ```
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">W celu potwierdzenia utworzono wykres, który również sprawdza, czy dane spełniają ustalone reguły.</p>
 
-W celu potwierdzenia utworzono wykres, który również sprawdza, czy dane spełniają ustalone reguły.
-
-</p>
-
-<p style="text-align: center;">
-
-[**Wykres spełnienia reguł**]{style="color:navy;"}
-
-</p>
+<p style="text-align: center;">[**Wykres spełnienia reguł**]{style="color:navy;"}</p>
 
 ```{r reguły zmiennych 2, fig.align='center', fig.width=7, fig.height=5}
 df <- as.data.frame(cf)
@@ -291,11 +235,7 @@ ggplot(df, aes(y = name, fill = factor(value))) +
 
 ## Duplikaty
 
-<p style="text-align: justify;">
-
-Dane nie posiadają duplikatów, obserwacje są unikalne i nie ma potrzeby dodatkowego czyszczenia pod kątem prawidłowości struktury danych
-
-</p>
+<p style="text-align: justify;">Dane nie posiadają duplikatów, obserwacje są unikalne i nie ma potrzeby dodatkowego czyszczenia pod kątem prawidłowości struktury danych.</p>
 
 ```{r}
 liczba_duplikatow <- sum(duplicated(kredyty_inp))
@@ -315,11 +255,7 @@ kable(tabela2, align = "c") %>%
 
 ## Wykres kołowy
 
-<p style="text-align: center;">
-
-[**Rozkład statusów decyzji kredytowych**]{style="color:navy;"}
-
-</p>
+<p style="text-align: center;">[**Rozkład statusów decyzji kredytowych**]{style="color:navy;"}</p>
 
 ```{r, fig.align='center', fig.width=7, fig.height=5}
 max_income <- 20000
@@ -360,19 +296,11 @@ ggplot(kolowy2, aes(x = "", y = percentage, fill = Loan_Status)) +
   )
 ```
 
-<p style="text-align: justify;">
-
-Wykres pokazuje, że większość wniosków kredytowych zakończyła się pozytywną decyzją - około 69% stanowią zgody na udzielenie pożyczki. Odmowy stanowią natomiast około 31% wszystkich przypadków.
-
-</p>
+<p style="text-align: justify;">Wykres pokazuje, że większość wniosków kredytowych zakończyła się pozytywną decyzją - około 69% stanowią zgody na udzielenie pożyczki. Odmowy stanowią natomiast około 31% wszystkich przypadków.</p>
 
 ## Wykresy słupkowe
 
-<p style="text-align: center;">
-
-[**Udział decyzji kredytowych w zależności od obszaru zamieszkania**]{style="color:navy;"}
-
-</p>
+<p style="text-align: center;">[**Udział decyzji kredytowych w zależności od obszaru zamieszkania**]{style="color:navy;"}</p>
 
 ```{r, fig.align='center', fig.width=7, fig.height=5}
 ggplot(kredyty_inp, aes(x = Property_Area, fill = Loan_Status)) +
@@ -386,17 +314,9 @@ ggplot(kredyty_inp, aes(x = Property_Area, fill = Loan_Status)) +
   theme_minimal(base_size = 10)
 ```
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">Najwyższy odsetek wniosków zakończonych przyznaniem kredytu można zaobserwować wśród klientów mieszkających w obszarach półmiejskich. W tej grupie ponad 75% wniosków kończy się akceptacją. W obszarach miejskich i wiejskich udział decyzji pozytywnych jest niższy i wynosi około 60-65%.</p>
 
-Najwyższy odsetek wniosków zakończonych przyznaniem kredytu można zaobserwować wśród klientów mieszkających w obszarach półmiejskich. W tej grupie ponad 75% wniosków kończy się akceptacją. W obszarach miejskich i wiejskich udział decyzji pozytywnych jest niższy i wynosi około 60-65%.
-
-</p>
-
-<p style="text-align: center;">
-
-[**Udział decyzji kredytowych w zależności od historii kredytowej**]{style="color:navy;"}
-
-</p>
+<p style="text-align: center;">[**Udział decyzji kredytowych w zależności od historii kredytowej**]{style="color:navy;"}</p>
 
 ```{r, fig.align='center', fig.width=7, fig.height=5}
 ggplot(kredyty_inp, aes(x = as.factor(Credit_History), fill = Loan_Status)) +
@@ -411,17 +331,9 @@ ggplot(kredyty_inp, aes(x = as.factor(Credit_History), fill = Loan_Status)) +
   theme_minimal(base_size = 10)
 ```
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">Wykres pokazuje, że wśród klientów posiadających historię kredytową znaczna większość otrzymuje kredyt, natomiast jej brak wiąże się z dużo większym odsetkiem odrzuceń.</p>
 
-Wykres pokazuje, że wśród klientów posiadających historię kredytową znaczna większość otrzymuje kredyt, natomiast jej brak wiąże się z dużo większym odsetkiem odrzuceń.
-
-</p>
-
-<p style="text-align: center;">
-
-[**Udział decyzji kredytowych w zależności od poziomu wykształcenia**]{style="color:navy;"}
-
-</p>
+<p style="text-align: center;">[**Udział decyzji kredytowych w zależności od poziomu wykształcenia**]{style="color:navy;"}</p>
 
 ```{r, fig.align='center', fig.width=7, fig.height=5}
 ggplot(kredyty_inp, aes(x = as.factor(Education), fill = Loan_Status)) +
@@ -437,11 +349,7 @@ ggplot(kredyty_inp, aes(x = as.factor(Education), fill = Loan_Status)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-<p style="text-align: justify;">
-
-Z wykresu wynika, że osoby z wykształceniem częściej otrzymują zgodę na udzielenie kredytu niż osoby bez wykształcenia. Jednocześnie w grupie bez wykształcenia odsetek odmów jest wyraźnie większy.
-
-</p>
+<p style="text-align: justify;">Z wykresu wynika, że osoby z wykształceniem częściej otrzymują zgodę na udzielenie kredytu niż osoby bez wykształcenia. Jednocześnie w grupie bez wykształcenia odsetek odmów jest wyraźnie większy.</p>
 
 ## Wykresy pudełkowe
 
@@ -543,19 +451,11 @@ p6 <- ggplot(kredyty_inp, aes(x = Married, y = LoanAmount)) +
 
 ```
 
-<p style="text-align: justify;">
-
-Wykresy pokazują, że istnieją różnice w kwocie kredytów w zależności od poziomu wykształcenia, płci, liczby osób w gospodarstwie domowym oraz stanu cywilnego. Nie widać natomiast istotnych różnic dla historii kredytowej oraz obszaru zamieszkania.
-
-</p>
+<p style="text-align: justify;">Wykresy pokazują, że istnieją różnice w kwocie kredytów w zależności od poziomu wykształcenia, płci, liczby osób w gospodarstwie domowym oraz stanu cywilnego. Nie widać natomiast istotnych różnic dla historii kredytowej oraz obszaru zamieszkania.</p>
 
 ## Heatmapa
 
-<p style="text-align: center;">
-
-[**Korelacja zmiennych numerycznych**]{style="color:navy;"}
-
-</p>
+<p style="text-align: center;">[**Korelacja zmiennych numerycznych**]{style="color:navy;"}</p>
 
 ```{r, fig.align='center', fig.width=7, fig.height=5}
 macierz_korelacji <- round(cor(kredyty_inp %>% select_if(is.numeric)), 2)
@@ -597,19 +497,11 @@ ggplot(data = macierz_korelacji, aes(x = Var1, y = Var2, fill = value)) +
 
 ```
 
-<p style="text-align: justify;">
-
-Wykres korelacji pokazuje, że najsilniejsza zależność występuje między dochodem wnioskodawcy a kwotą pożyczki (umiarkowana dodatnia korelacja). Pozostałe zmienne, w tym historia kredytowa i okres pożyczki, są ze sobą bardzo słabo skorelowane lub praktycznie niezależne.
-
-</p>
+<p style="text-align: justify;">Wykres korelacji pokazuje, że najsilniejsza zależność występuje między dochodem wnioskodawcy a kwotą pożyczki (umiarkowana dodatnia korelacja). Pozostałe zmienne, w tym historia kredytowa i okres pożyczki, są ze sobą bardzo słabo skorelowane lub praktycznie niezależne.</p>
 
 ## Wykres punktowy
 
-<p style="text-align: center;">
-
-[**Zależność między dochodem wnioskodawcy a kwotą pożyczki**]{style="color:navy;"}
-
-</p>
+<p style="text-align: center;">[**Zależność między dochodem wnioskodawcy a kwotą pożyczki**]{style="color:navy;"}</p>
 
 ```{r, fig.align='center', fig.width=7, fig.height=5}
 filtered_data <- kredyty_inp %>%
@@ -627,11 +519,7 @@ ggplot(data = filtered_data, aes(x = Income, y = LoanAmount, color = Loan_Status
 
 ```
 
-<p style="text-align: justify;">
-
-Zdecydowana większość wniosków kredytowych koncentruje się w obszarze niskich dochodów - poniżej 20 000 USD oraz niskich kwot pożyczek, czyli tych o kwotach poniżej 300 tys. USD. Powyższy wykres wskazuje zatem, że dochód i kwota pożyczki nie są jedynymi czynnikami decyzyjnymi, ponieważ w określonym obszarze występują zarówno wnioski przyjęte, jak i odrzucone.
-
-</p>
+<p style="text-align: justify;">Zdecydowana większość wniosków kredytowych koncentruje się w obszarze niskich dochodów - poniżej 20 000 USD oraz niskich kwot pożyczek, czyli tych o kwotach poniżej 300 tys. USD. Powyższy wykres wskazuje zatem, że dochód i kwota pożyczki nie są jedynymi czynnikami decyzyjnymi, ponieważ w określonym obszarze występują zarówno wnioski przyjęte, jak i odrzucone.</p>
 
 # **Analiza opisowa**
 
@@ -649,11 +537,7 @@ statystyki_opisowe <- t(sapply(zmienne, function(x) {
     Mediana = median(x),
     Minimum = min(x),
     Maksimum = max(x),
-    Rozstęp = max(x, na.rm = TRUE) - min(x, na.rm = TRUE),
-    `Rozstęp międzykwartylowy` = IQR(x, na.rm = TRUE),
-    Wariancja = var(x, na.rm = TRUE),
-    `Odchylenie standardowe` = sd(x),
-    `Współczynnik zmienności (%)` = sd(x) / mean(x) * 100
+    Rozstęp = max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
   )
 }))
 
@@ -667,36 +551,47 @@ rownames(statystyki_opisowe) <- c(
 )
 
 kable(statystyki_opisowe, digits = 2, align = "c") %>%
-  kable_styling(full_width = FALSE, position = "center") %>%
+  kable_styling(full_width = TRUE, position = "center") %>%
    row_spec(0, bold = TRUE, color = "navy")
 
 ```
 
-<p style="text-align: justify;">
+```{r}
+statystyki_opisowe2 <- t(sapply(zmienne, function(x) {
+  c(
+    `Rozstęp międzykwartylowy` = IQR(x, na.rm = TRUE),
+    Wariancja = var(x, na.rm = TRUE),
+    `Odchylenie standardowe` = sd(x),
+    `Współczynnik zmienności (%)` = sd(x) / mean(x) * 100
+  )
+}))
 
-Analiza statystyk opisowych wskazuje na duże zróżnicowanie dochodów wśród wnioskodawców. Ich średni dochód wynosi około 5403 USD. Mediana natomiast kształtuje się na poziomie 3813 USD. Różnica pomiędzy średnią a medianą może sugerować prawostronną asymetrię rozkładu dochodów. Oznacza to, że część obserwacji o bardzo wysokich dochodach zawyża wartość średnią. Minimalny dochód wynosi 150 USD, a maksymalny aż 81000 USD. To również potwierdza dużą rozpiętość danych.
+statystyki_opisowe2 <- as.data.frame(statystyki_opisowe2)
 
-<p style="text-align: justify;">
+rownames(statystyki_opisowe2) <- c(
+  "Applicant Income",
+  "Coapplicant Income",
+  "Loan Amount",
+  "Loan Amount Term"
+)
 
-Dochody współwnioskodawców są przeciętnie znacznie niższe. Ich średnia wynosi około 1621 USD, a mediana 1189 USD. Wysokie odchylenie standardowe również pokazuje duże zróżnicowanie tej zmiennej. 
+kable(statystyki_opisowe2, digits = 2, align = "c") %>%
+  kable_styling(full_width = TRUE, position = "center") %>%
+   row_spec(0, bold = TRUE, color = "navy")
+```
 
-<p style="text-align: justify;">
 
-Średnia kwota pożyczki wynosi około 146 tys. USD, przy medianie równej 128 tys. USD. Podobnie jak w przypadku dochodów, wyższa wartość średniej w porównaniu do mediany pokazuje asymetrię rozkładu i obecność relatywnie wysokich kwot kredytów. Zakres zmienności jest znaczny, bo od od 9 do 700 tys. USD. Badana próba obejmuje więc zarówno niewielkie, jak i bardzo wysokie zobowiązania kredytowe.
+<p style="text-align: justify;">Analiza statystyk opisowych wskazuje na duże zróżnicowanie dochodów wśród wnioskodawców. Ich średni dochód wynosi około 5403 USD. Mediana natomiast kształtuje się na poziomie 3813 USD. Różnica pomiędzy średnią a medianą może sugerować prawostronną asymetrię rozkładu dochodów. Oznacza to, że część obserwacji o bardzo wysokich dochodach zawyża wartość średnią. Minimalny dochód wynosi 150 USD, a maksymalny aż 81000 USD. To również potwierdza dużą rozpiętość danych.</p>
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">Dochody współwnioskodawców są przeciętnie znacznie niższe. Ich średnia wynosi około 1621 USD, a mediana 1189 USD. Wysokie odchylenie standardowe również pokazuje duże zróżnicowanie tej zmiennej.</p>
 
-Okres kredytowania ma mniejsze zróżnicowanie w porównaniu do pozostałych zmiennych. Średni okres spłaty wynosi około 342 miesiące, a mediana równa jest 360 miesiącom, więc najczęściej spotykanym okresem kredytowania jest 30 lat. Odchylenie standardowe na poziomie 65 miesięcy świadczy o umiarkowanej zmienności tej zmiennej, a zakres od 12 do 480 miesięcy wskazuje na istnienie zarówno krótkoterminowych, jak i długoterminowych umów kredytowych.
+<p style="text-align: justify;">Średnia kwota pożyczki wynosi około 146 tys. USD, przy medianie równej 128 tys. USD. Podobnie jak w przypadku dochodów, wyższa wartość średniej w porównaniu do mediany pokazuje asymetrię rozkładu i obecność relatywnie wysokich kwot kredytów. Zakres zmienności jest znaczny, bo od od 9 do 700 tys. USD. Badana próba obejmuje więc zarówno niewielkie, jak i bardzo wysokie zobowiązania kredytowe.</p>
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">Okres kredytowania ma mniejsze zróżnicowanie w porównaniu do pozostałych zmiennych. Średni okres spłaty wynosi około 342 miesiące, a mediana równa jest 360 miesiącom, więc najczęściej spotykanym okresem kredytowania jest 30 lat. Odchylenie standardowe na poziomie 65 miesięcy świadczy o umiarkowanej zmienności tej zmiennej, a zakres od 12 do 480 miesięcy wskazuje na istnienie zarówno krótkoterminowych, jak i długoterminowych umów kredytowych.</p>
 
-Dla dochodu wnioskodawcy rozstęp wynosi 80 850, a wariancja 37 320 390,17. Jest to bardzo szeroki zakres obserwowanych wartości oraz występują pomiędzy nimi znaczne różnice. Jednocześnie wysoki rozstęp międzykwartylowy (2 917,50) sugeruje, że nawet w centralnej części rozkładu zmienność dochodów jest duża. Podobnie, ale w mniejszym stopniu, zróżnicowany jest dochód współwnioskodawcy, dla którego rozstęp wynosi 41 667, a wariancja 8 562 929,52. Wartość rozstępu międzykwartylowego (2 297,25) pokazuje istotne zróżnicowanie dochodów wśród środkowych 50% obserwacji. W przypadku kwoty kredytu rozstęp wynosi 691, a rozstęp międzykwartylowy 68. Połowa obserwacji mieści się w wąskim przedziale wartości, mimo występowania obserwacji skrajnych, które zwiększają całkowity rozstęp i wariancję. Okres spłaty kredytu ma rozstęp równy 468, jednak rozstęp międzykwartylowy wynosi 0, co oznacza, że co najmniej 50% kredytów posiada identyczny okres spłaty (najczęściej 360 miesięcy). Wskazuje to na silną koncentrację obserwacji wokół jednej wartości oraz niewielkie zróżnicowanie w centralnej części rozkładu, mimo obecności wartości skrajnych.
+<p style="text-align: justify;">Dla dochodu wnioskodawcy rozstęp wynosi 80 850, a wariancja 37 320 390,17. Jest to bardzo szeroki zakres obserwowanych wartości oraz występują pomiędzy nimi znaczne różnice. Jednocześnie wysoki rozstęp międzykwartylowy (2 917,50) sugeruje, że nawet w centralnej części rozkładu zmienność dochodów jest duża. Podobnie, ale w mniejszym stopniu, zróżnicowany jest dochód współwnioskodawcy, dla którego rozstęp wynosi 41 667, a wariancja 8 562 929,52. Wartość rozstępu międzykwartylowego (2 297,25) pokazuje istotne zróżnicowanie dochodów wśród środkowych 50% obserwacji. W przypadku kwoty kredytu rozstęp wynosi 691, a rozstęp międzykwartylowy 68. Połowa obserwacji mieści się w wąskim przedziale wartości, mimo występowania obserwacji skrajnych, które zwiększają całkowity rozstęp i wariancję. Okres spłaty kredytu ma rozstęp równy 468, jednak rozstęp międzykwartylowy wynosi 0, co oznacza, że co najmniej 50% kredytów posiada identyczny okres spłaty (najczęściej 360 miesięcy). Wskazuje to na silną koncentrację obserwacji wokół jednej wartości oraz niewielkie zróżnicowanie w centralnej części rozkładu, mimo obecności wartości skrajnych.</p>
 
-<p style="text-align: justify;">
-
-Współczynnik zmienności pokazuje bardzo duże zróżnicowanie dochodów w badanej próbie. Najwyższą zmienność ma dochód współwnioskodawcy (180,49%), co świadczy o silnej heterogeniczności tej zmiennej. Dochód głównego wnioskodawcy także cechuje się bardzo wysokim współczynnikiem zmienności (113,06%). Kwota kredytu wykazuje umiarkowane zróżnicowanie (58,99%), natomiast najmniejszą zmienność ma okres kredytowania (18,93%).
-
-</p>
+<p style="text-align: justify;">Współczynnik zmienności pokazuje bardzo duże zróżnicowanie dochodów w badanej próbie. Najwyższą zmienność ma dochód współwnioskodawcy (180,49%), co świadczy o silnej heterogeniczności tej zmiennej. Dochód głównego wnioskodawcy także cechuje się bardzo wysokim współczynnikiem zmienności (113,06%). Kwota kredytu wykazuje umiarkowane zróżnicowanie (58,99%), natomiast najmniejszą zmienność ma okres kredytowania (18,93%).</p>
 
 ## Miary asymetrii i kurtozy
 
@@ -727,29 +622,18 @@ kable(asymetria_kurtoza, digits = 2, align = "c") %>%
   row_spec(0, bold = TRUE, color = "navy")
 ```
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">Współczynnik asymetrii dla dochodów wnioskodawców wynosi 6,51, co potwierdza silną asymetrię prawostronną rozkładu, opisywaną już w miarach położenia i zróżnicowania zmiennych ilościowych. Większość obserwacji skupiona jest na niskich wartościach dochodu, natomiast występują nieliczne, lecz bardzo wysokie dochody, które wydłużają prawy ogon rozkładu. Kurtoza na poziomie 59,83 świadczy o rozkładzie leptokurtycznym, charakteryzującym się obecnością obserwacji odstających.</p>
 
-Współczynnik asymetrii dla dochodów wnioskodawców wynosi 6,51, co potwierdza silną asymetrię prawostronną rozkładu, opisywaną już w miarach położenia i zróżnicowania zmiennych ilościowych. Większość obserwacji skupiona jest na niskich wartościach dochodu, natomiast występują nieliczne, lecz bardzo wysokie dochody, które wydłużają prawy ogon rozkładu. Kurtoza na poziomie 59,83 świadczy o rozkładzie leptokurtycznym, charakteryzującym się obecnością obserwacji odstających.
+<p style="text-align: justify;">Zmienna dochody współwnioskodawców ma asymetrię prawostronną o wartości 7,45, jeszcze silniejszą niż w przypadku dochodu głównego wnioskodawcy. Oznacza to, że zdecydowana większość współwnioskodawców osiąga niskie lub zerowe dochody, natomiast niewielka liczba obserwacji przyjmuje bardzo wysokie wartości. Kurtoza równa 83,97 potwierdza silną koncentrację danych wokół niskich wartości oraz obecność bardzo silnych obserwacji odstających.</p>
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">Dla kwoty pożyczki współczynnik asymetrii wynosi 2,63, co wskazuje na umiarkowaną asymetrię prawostronną. Rozkład kwot kredytu jest mniej skośny niż rozkłady dochodów, jednak nadal dominują niższe kwoty kredytów przy występowaniu większych wartości skrajnych. Kurtoza na poziomie 9,87 wskazuje na większą koncentrację obserwacji wokół wartości centralnych oraz obecność obserwacji odstających.</p>
 
-Zmienna dochody współwnioskodawców ma asymetrię prawostronną o wartości 7,45, jeszcze silniejszą niż w przypadku dochodu głównego wnioskodawcy. Oznacza to, że zdecydowana większość współwnioskodawców osiąga niskie lub zerowe dochody, natomiast niewielka liczba obserwacji przyjmuje bardzo wysokie wartości. Kurtoza równa 83,97 potwierdza silną koncentrację danych wokół niskich wartości oraz obecność bardzo silnych obserwacji odstających.
+<p style="text-align: justify;">Okres kredytowania charakteryzuje się asymetrią lewostronną (–2,35). Większość okresów kredytowania koncentruje się na dłuższych terminach, natomiast krótsze okresy występują rzadziej. Kurtoza równa 6,72 sugeruje koncentrację obserwacji wokół typowych długości okresów kredytowania oraz ograniczoną, lecz wyraźną liczbę wartości odstających.</p>
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">Wszystkie analizowane zmienne charakteryzują się znacznym odejściem od rozkładu normalnego, szczególnie w przypadku zmiennych dochodowych, które wykazują silną asymetrię prawostronną oraz bardzo wysoką kurtozę.</p>
 
-Dla kwoty pożyczki współczynnik asymetrii wynosi 2,63, co wskazuje na umiarkowaną asymetrię prawostronną. Rozkład kwot kredytu jest mniej skośny niż rozkłady dochodów, jednak nadal dominują niższe kwoty kredytów przy występowaniu większych wartości skrajnych. Kurtoza na poziomie 9,87 wskazuje na większą koncentrację obserwacji wokół wartości centralnych oraz obecność obserwacji odstających.
+## Analiza korelacji
 
-<p style="text-align: justify;">
-
-Okres kredytowania charakteryzuje się asymetrią lewostronną (–2,35). Większość okresów kredytowania koncentruje się na dłuższych terminach, natomiast krótsze okresy występują rzadziej. Kurtoza równa 6,72 sugeruje koncentrację obserwacji wokół typowych długości okresów kredytowania oraz ograniczoną, lecz wyraźną liczbę wartości odstających.
-
-<p style="text-align: justify;">
-
-Wszystkie analizowane zmienne charakteryzują się znacznym odejściem od rozkładu normalnego, szczególnie w przypadku zmiennych dochodowych, które wykazują silną asymetrię prawostronną oraz bardzo wysoką kurtozę.
-
-</p>
-
-## Analiza korelacji 
 ```{r}
 macierz_korelacji <- round(cor(zmienne, method = "pearson"), 2)
 
@@ -777,22 +661,12 @@ kable(
 
 ```
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">**Klasyfikacja siły korelacji**:</p> 
 
-**Klasyfikacja siły korelacji**: 
+<p style="text-align: justify;">|r| < 0,3 - słaba korelacja</p>
 
-<p style="text-align: justify;">
+<p style="text-align: justify;">0,3 ≤ |r| ≤ 0,7 - umiarkowana korelacja</p>
 
-|r| < 0,3 - słaba korelacja 
+<p style="text-align: justify;">|r| ≥ 0,7 - silna korelacja</p>
 
-<p style="text-align: justify;">
-
-0,3 ≤ |r| ≤ 0,7 - umiarkowana korelacja 
-
-<p style="text-align: justify;">
-
-|r| ≥ 0,7 - silna korelacja
-
-<p style="text-align: justify;">
-
-Na podstawie przeprowadzonej analizy korelacji Pearsona można stwierdzić, że zależności pomiędzy analizowanymi zmiennymi ilościowymi są zróżnicowane pod względem siły i kierunku. Najsilniejszą zależność zaobserwowano pomiędzy dochodem wnioskodawcy a kwotą kredytu, dla której współczynnik korelacji wynosi 0,55. Wskazuje to na umiarkowaną dodatnią korelację: wraz ze wzrostem dochodu głównego wnioskodawcy rośnie przeciętnie kwota zaciąganego kredytu. Zależność pomiędzy dochodem współwnioskodawcy a kwotą kredytu jest słaba i dodatnia: r = 0,18. Dochód współwnioskodawcy ma mniejsze znaczenie przy ustalaniu wysokości kredytu niż dochód głównego wnioskodawcy. Korelacje pomiędzy dochodami wnioskodawców a okresem spłaty kredytu są bardzo słabe i bliskie zeru, od –0,06 do 0,03. Brak jest więc istotnej zależności liniowej pomiędzy tymi zmiennymi. Ponadto, korelacja pomiędzy dochodem wnioskodawcy a dochodem współwnioskodawcy jest słaba i ujemna: r = –0,12. Zmienne te nie wykazują istotnej współzależności.
+<p style="text-align: justify;">Na podstawie przeprowadzonej analizy korelacji Pearsona można stwierdzić, że zależności pomiędzy analizowanymi zmiennymi ilościowymi są zróżnicowane pod względem siły i kierunku. Najsilniejszą zależność zaobserwowano pomiędzy dochodem wnioskodawcy a kwotą kredytu, dla której współczynnik korelacji wynosi 0,55. Wskazuje to na umiarkowaną dodatnią korelację: wraz ze wzrostem dochodu głównego wnioskodawcy rośnie przeciętnie kwota zaciąganego kredytu. Zależność pomiędzy dochodem współwnioskodawcy a kwotą kredytu jest słaba i dodatnia: r = 0,18. Dochód współwnioskodawcy ma mniejsze znaczenie przy ustalaniu wysokości kredytu niż dochód głównego wnioskodawcy. Korelacje pomiędzy dochodami wnioskodawców a okresem spłaty kredytu są bardzo słabe i bliskie zeru, od –0,06 do 0,03. Brak jest więc istotnej zależności liniowej pomiędzy tymi zmiennymi. Ponadto, korelacja pomiędzy dochodem wnioskodawcy a dochodem współwnioskodawcy jest słaba i ujemna: r = –0,12. Zmienne te nie wykazują istotnej współzależności.</p>
