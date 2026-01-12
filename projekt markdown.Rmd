@@ -670,3 +670,8 @@ kable(
 <p style="text-align: justify;">|r| ≥ 0,7 - silna korelacja</p>
 
 <p style="text-align: justify;">Na podstawie przeprowadzonej analizy korelacji Pearsona można stwierdzić, że zależności pomiędzy analizowanymi zmiennymi ilościowymi są zróżnicowane pod względem siły i kierunku. Najsilniejszą zależność zaobserwowano pomiędzy dochodem wnioskodawcy a kwotą kredytu, dla której współczynnik korelacji wynosi 0,55. Wskazuje to na umiarkowaną dodatnią korelację: wraz ze wzrostem dochodu głównego wnioskodawcy rośnie przeciętnie kwota zaciąganego kredytu. Zależność pomiędzy dochodem współwnioskodawcy a kwotą kredytu jest słaba i dodatnia: r = 0,18. Dochód współwnioskodawcy ma mniejsze znaczenie przy ustalaniu wysokości kredytu niż dochód głównego wnioskodawcy. Korelacje pomiędzy dochodami wnioskodawców a okresem spłaty kredytu są bardzo słabe i bliskie zeru, od –0,06 do 0,03. Brak jest więc istotnej zależności liniowej pomiędzy tymi zmiennymi. Ponadto, korelacja pomiędzy dochodem wnioskodawcy a dochodem współwnioskodawcy jest słaba i ujemna: r = –0,12. Zmienne te nie wykazują istotnej współzależności.</p>
+
+# **Testy statystyczne**
+
+
+```{r}
