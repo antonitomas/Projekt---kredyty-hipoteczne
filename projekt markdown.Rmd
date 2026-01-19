@@ -656,8 +656,7 @@ kable(
   align = "c"
 ) %>%
   kable_styling(full_width = FALSE, position = "center") %>%
-  row_spec(0, bold = TRUE, color = "navy") %>%
-  column_spec(1, bold = TRUE, color = "navy")
+  row_spec(0, bold = TRUE, color = "navy")
 
 ```
 
@@ -672,6 +671,17 @@ kable(
 <p style="text-align: justify;">Na podstawie przeprowadzonej analizy korelacji Pearsona można stwierdzić, że zależności pomiędzy analizowanymi zmiennymi ilościowymi są zróżnicowane pod względem siły i kierunku. Najsilniejszą zależność zaobserwowano pomiędzy dochodem wnioskodawcy a kwotą kredytu, dla której współczynnik korelacji wynosi 0,55. Wskazuje to na umiarkowaną dodatnią korelację: wraz ze wzrostem dochodu głównego wnioskodawcy rośnie przeciętnie kwota zaciąganego kredytu. Zależność pomiędzy dochodem współwnioskodawcy a kwotą kredytu jest słaba i dodatnia: r = 0,18. Dochód współwnioskodawcy ma mniejsze znaczenie przy ustalaniu wysokości kredytu niż dochód głównego wnioskodawcy. Korelacje pomiędzy dochodami wnioskodawców a okresem spłaty kredytu są bardzo słabe i bliskie zeru, od –0,06 do 0,03. Brak jest więc istotnej zależności liniowej pomiędzy tymi zmiennymi. Ponadto, korelacja pomiędzy dochodem wnioskodawcy a dochodem współwnioskodawcy jest słaba i ujemna: r = –0,12. Zmienne te nie wykazują istotnej współzależności.</p>
 
 # **Testy statystyczne**
+```{r include=FALSE}
+install.packages("ggstatsplot")
+library(ggstatsplot)
 
+```
 
 ```{r}
+#badanie rozkładu zmiennych
+shapiro_applicant <- shapiro.test(dane$ApplicantIncome)
+shapiro_loanamount <- shapiro.test(dane$LoanAmount)
+shapiro_applicant
+shapiro_loanamount
+```
+Test Shapiro pokazał, że zarówno zmienna ApplicantIncome (dochód wnioskodawcy), jak i zmienna LoanAmount (kwota kredytu) nie mają rozkładu normalnego. Dla obu testów p-value było mniejsze od 0,5, więc należy odrzucić hipotezę zerową o normalności rozkładu.
