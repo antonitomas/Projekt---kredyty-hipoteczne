@@ -685,3 +685,147 @@ shapiro_applicant
 shapiro_loanamount
 ```
 Test Shapiro pokazał, że zarówno zmienna ApplicantIncome (dochód wnioskodawcy), jak i zmienna LoanAmount (kwota kredytu) nie mają rozkładu normalnego. Dla obu testów p-value było mniejsze od 0,5, więc należy odrzucić hipotezę zerową o normalności rozkładu.
+```{r}
+str(kredyty_inp)
+head(kredyty_inp)
+summary(kredyty_inp)
+```
+
+```{r}
+library(ggstatsplot)
+library(tidyverse)
+library(car)
+
+kredyty_inp <- kredyty_inp %>%
+  mutate(
+    Gender = factor(Gender),
+    Married = factor(Married),
+    Dependents = factor(Dependents),
+    Education = factor(Education),
+    Self_Employed = factor(Self_Employed),
+    Property_Area = factor(Property_Area),
+    Loan_Status = factor(Loan_Status)
+  )
+
+# Całkowity dochód
+kredyty_inp <- kredyty_inp %>%
+  mutate(
+    TotalIncome = ApplicantIncome + CoapplicantIncome
+  )
+```
+
+```{r}
+# Porównanie dochodu całkowitego względem decyzji kredytowej
+ggbetweenstats(
+  data = kredyty_inp,
+  x = Loan_Status,
+  y = TotalIncome,
+  type = "parametric",
+  messages = FALSE,
+  title = "Dochód całkowity a decyzja kredytowa",
+  xlab = "Decyzja kredytowa",
+  ylab = "Dochód całkowity"
+)
+```
+
+```{r}
+ggbetweenstats(
+  data = kredyty_inp,
+  x = Loan_Status,
+  y = LoanAmount,
+  type = "parametric",
+  messages = FALSE,
+  title = "Kwota kredytu a decyzja kredytowa",
+  xlab = "Decyzja kredytowa",
+  ylab = "Kwota kredytu"
+)
+```
+
+```{r}
+ggbetweenstats(
+  data = kredyty_inp,
+  x = Loan_Status,
+  y = Loan_Amount_Term,
+  type = "nonparametric",
+  messages = FALSE,
+  title = "Okres kredytowania a decyzja",
+  xlab = "Decyzja",
+  ylab = "Okres (miesiące)"
+)
+```
+
+```{r}
+ggbetweenstats(
+  data = kredyty_inp,
+  x = Property_Area,
+  y = LoanAmount,
+  type = "parametric",
+  messages = FALSE,
+  title = "Obszar zamieszkania a kwota kredytu",
+  xlab = "Obszar",
+  ylab = "Kwota kredytu"
+)
+```
+
+```{r}
+ggscatterstats(
+  data = kredyty_inp,
+  x = TotalIncome,
+  y = LoanAmount,
+  messages = FALSE,
+  title = "Zależność dochodu i kwoty kredytu"
+)
+```
+
+```{r}
+ggchisqstats(
+  data = kredyty_inp,
+  x = Education,
+  y = Loan_Status,
+  messages = FALSE,
+  title = "Wykształcenie a decyzja kredytowa"
+)
+```
+
+```{r}
+# Test Levene’a
+leveneTest(TotalIncome ~ Loan_Status, data = kredyty_inp)
+
+# ANOVA klasyczna
+anova_income <- aov(TotalIncome ~ Loan_Status, data = kredyty_inp)
+summary(anova_income)
+
+# Test nieparametryczny
+wilcox.test(TotalIncome ~ Loan_Status, data = kredyty_inp)
+```
+
+```{r}
+model_logistic <- glm(
+  Loan_Status ~ TotalIncome + LoanAmount + Credit_History +
+    Education + Property_Area + Self_Employed,
+  data = kredyty_inp,
+  family = binomial
+)
+summary(model_logistic)
+
+odds_ratios <- exp(coef(model_logistic))
+odds_ratios
+
+conf_intervals <- exp(confint(model_logistic))
+conf_intervals
+
+kredyty_inp$Predicted_Prob <- predict(
+  model_logistic,
+  type = "response"
+)
+
+
+# Wykres rozkładu prawdopodobieństw
+ggplot(kredyty_inp, aes(x = Predicted_Prob, fill = Loan_Status)) +
+  geom_histogram(position = "identity", alpha = 0.6, bins = 30) +
+  labs(
+    title = "Rozkład przewidywanego prawdopodobieństwa decyzji",
+    x = "Prawdopodobieństwo zatwierdzenia",
+    y = "Liczba obserwacji"
+  )
+```
