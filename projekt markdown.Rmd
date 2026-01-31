@@ -964,3 +964,17 @@ ggplot(kredyty_inp, aes(x = Predicted_Prob, fill = Loan_Status)) +
 <p style="text-align: justify;">Stosunkowo niewielki obszar nakładania się obu rozkładów wskazuje na dobrą zdolność modelu do separacji klas, choć jednocześnie ujawnia istnienie przypadków granicznych, w których model nie jest w pełni pewny swojej decyzji. Oznacza to, że model ma wysoką użyteczność predykcyjną.</p>
 
 # **Wnioski końcowe**
+
+<p style="text-align: justify;">Nasza analiza danych dotyczących wniosków kredytowych pozwoliła na ocenę zależności pomiędzy różnymi zmiennymi a statusem wniosku kredytowego.</p>
+
+<p style="text-align: justify;">Wyniki badań wskazują jednoznacznie, że najważniejszym czynnikiem wpływającym na pozytywne rozpatrzenie wniosku o kredyt jest historia kredytowa wnioskodawcy. Zmienna ta wykazywała zarówno najwyższy poziom zróżnicowania między grupami, jak i najwyższą istotność statystyczną w modelu regresji logistycznej, w którym oszacowane ilorazy szans potwierdzają jej dominujący wpływ na decyzję kredytową.</p>
+
+<p style="text-align: justify;">Analizy korelacyjne i opisowe wykazały, że dochód gospodarstwa domowego jest powiązany z wysokością udzielanego kredytu. Jednakże w testach statystycznych nie zaobserwowaliśmy istotnych różnic w poziomie dochodu pomiędzy grupami wniosków zaakceptowanych i odrzuconych. Z tego powodu nie jesteśmy w stanie przewidywać decyzji kredytowej na jego podstawie.</p>
+
+<p style="text-align: justify;">Zauważyliśmy, że obszar zamieszkania wpływał na prawdopodobieństwo uzyskania kredytu. Najwyższy odsetek decyzji pozytywnych odnotowano wśród wnioskodawców z obszarów półmiejskich.</p>
+
+<p style="text-align: justify;">Inne zmienne demograficzne, takie jak poziom wykształcenia, stan cywilny czy liczba osób w gospodarstwie domowym, wykazywały jedynie niewielkie różnice między grupami. Oceniamy więc ich wpływ jako marginalny.</p>
+
+<p style="text-align: justify;">Model logitowy okazał się być dobrym narzędziem do przewidywania decyzji kredytowej. Rozkład prawdopodobieństwa akceptacji wniosków podzielił się na na dwie wyraźne grupy, potwierdza to zdolność modelu do sprawnej predykcji.</p>
+
+<p style="text-align: justify;">Podsumowując, wyniki naszej analizy jednoznacznie wskazują, że historia kredytowa stanowi najważniejszy czynnik decydujący o przyznaniu kredytu. Zauważalny był także wpływ dochodu oraz obszaru zamieszkania, odgrywały one jednak rolę drugorzędną.</p>
