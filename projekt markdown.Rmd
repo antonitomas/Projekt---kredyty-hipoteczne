@@ -61,7 +61,7 @@ library(tidyr)
 library(e1071)
 library(tidyverse)
 library(car)
-knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
+knitr::opts_chunk$set(echo = FALSE, cache = FALSE)
 dane <- read_csv("Hipoteczny.csv")
 ```
 
