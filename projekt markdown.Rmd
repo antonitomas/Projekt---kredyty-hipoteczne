@@ -39,6 +39,10 @@ if(!require("tidyr")) install.packages("tidyr")
 if(!require("e1071")) install.packages("e1071")
 if(!require("ggstatsplot")) install.packages("ggstatsplot")
 if(!require("gt")) install.packages("gt")
+if(!require("ggExtra")) install.packages("ggExtra")
+if(!require("broom")) install.packages("broom")
+library(broom)
+library(ggExtra)
 library(gt)
 library(ggstatsplot)
 library(finalfit)
@@ -127,7 +131,7 @@ kable(tabela1, align = "c") %>%
 
 <p style="text-align: center;">[**Braki danych według liczby osób na utrzymaniu**]{style="color:navy;"}</p>
 
-```{r wizualizacja braków danych 1, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5}
+```{r wizualizacja braków danych 1, message=FALSE, warning=FALSE, fig.align='center', fig.width=10, fig.height=5}
 gg_miss_fct(kredyty, Dependents) +
   labs(title = "",
        x = "Liczba osób na utrzymaniu",
@@ -146,13 +150,13 @@ gg_miss_upset(kredyty)
 
 <p style="text-align: center;">[**Mapa braków danych**]{style="color:navy;"}</p>
 
-```{r wizualizacja braków danych 3, message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5}
+```{r wizualizacja braków danych 3, message=FALSE, warning=FALSE, fig.align='center', fig.width=10, fig.height=5}
 missmap(kredyty,
         main = "",
         col = c("lavender", "midnightblue"))
 ```
 
-```{r wizualizacja braków danych 4, fig.align='center', fig.height=5, fig.width=7, message=FALSE, warning=FALSE, include=FALSE}
+```{r wizualizacja braków danych 4, fig.align='center', fig.height=5, fig.width=10, message=FALSE, warning=FALSE, include=FALSE}
 invisible(md.pattern(kredyty, rotate.names = TRUE))
 ```
 
@@ -183,7 +187,7 @@ kable(tabela2, align = "c") %>%
 
 <p style="text-align: justify;">W kolejnym etapie nadano reguły dla zmiennych w celu sprawdzenia poprawności danych po uzupełnieniu braków. Poniżej w tabeli przedstawiono ilość wierszy spełniających i niespełniających poszczególne reguły. Widać w niej, że zbiór danych całkowicie spełnia ustalone reguły.</p>
 
-```{r reguły zmiennych, fig.align='center', fig.width=7, fig.height=5}
+```{r reguły zmiennych, fig.align='center', fig.width=10, fig.height=5}
 rules <- validator (
   Dependents >=0,
   Gender %in% c("Male","Female"),
@@ -225,7 +229,7 @@ kable(summary_df, align = c("c","c","c","l")) %>%
 
 <p style="text-align: center;">[**Wykres spełnienia reguł**]{style="color:navy;"}</p>
 
-```{r reguły zmiennych 2, fig.align='center', fig.width=7, fig.height=5}
+```{r reguły zmiennych 2, fig.align='center', fig.width=10, fig.height=5}
 df <- as.data.frame(cf)
 ggplot(df, aes(y = name, fill = factor(value))) +
   geom_bar(position = "stack") +
@@ -268,7 +272,7 @@ kable(tabela2, align = "c") %>%
 
 <p style="text-align: center;">[**Rozkład statusów decyzji kredytowych**]{style="color:navy;"}</p>
 
-```{r, fig.align='center', fig.width=7, fig.height=5}
+```{r, fig.align='center', fig.width=10, fig.height=5}
 max_income <- 20000
 max_loan_amount <- 300
 
@@ -313,7 +317,7 @@ ggplot(kolowy2, aes(x = "", y = percentage, fill = Loan_Status)) +
 
 <p style="text-align: center;">[**Udział decyzji kredytowych w zależności od obszaru zamieszkania**]{style="color:navy;"}</p>
 
-```{r, fig.align='center', fig.width=7, fig.height=5}
+```{r, fig.align='center', fig.width=10, fig.height=5}
 ggplot(kredyty_inp, aes(x = Property_Area, fill = Loan_Status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
@@ -329,7 +333,7 @@ ggplot(kredyty_inp, aes(x = Property_Area, fill = Loan_Status)) +
 
 <p style="text-align: center;">[**Udział decyzji kredytowych w zależności od historii kredytowej**]{style="color:navy;"}</p>
 
-```{r, fig.align='center', fig.width=7, fig.height=5}
+```{r, fig.align='center', fig.width=10, fig.height=5}
 ggplot(kredyty_inp, aes(x = as.factor(Credit_History), fill = Loan_Status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
@@ -346,7 +350,7 @@ ggplot(kredyty_inp, aes(x = as.factor(Credit_History), fill = Loan_Status)) +
 
 <p style="text-align: center;">[**Udział decyzji kredytowych w zależności od poziomu wykształcenia**]{style="color:navy;"}</p>
 
-```{r, fig.align='center', fig.width=7, fig.height=5}
+```{r, fig.align='center', fig.width=10, fig.height=5}
 ggplot(kredyty_inp, aes(x = as.factor(Education), fill = Loan_Status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
@@ -364,7 +368,7 @@ ggplot(kredyty_inp, aes(x = as.factor(Education), fill = Loan_Status)) +
 
 ## Wykresy pudełkowe
 
-```{r, fig.align='center', fig.width=7, fig.height=8}
+```{r, fig.align='center', fig.width=10, fig.height=8}
 p1 <- ggplot(kredyty_inp, aes(x = Education, y = LoanAmount)) +
   geom_boxplot(color = "navy") +
   labs(
@@ -468,7 +472,7 @@ p6 <- ggplot(kredyty_inp, aes(x = Married, y = LoanAmount)) +
 
 <p style="text-align: center;">[**Korelacja zmiennych numerycznych**]{style="color:navy;"}</p>
 
-```{r, fig.align='center', fig.width=7, fig.height=5}
+```{r, fig.align='center', fig.width=10, fig.height=5}
 macierz_korelacji <- round(cor(kredyty_inp %>% select_if(is.numeric)), 2)
 macierz_korelacji <- reshape2::melt(macierz_korelacji)
 
@@ -514,20 +518,22 @@ ggplot(data = macierz_korelacji, aes(x = Var1, y = Var2, fill = value)) +
 
 <p style="text-align: center;">[**Zależność między dochodem wnioskodawcy a kwotą pożyczki**]{style="color:navy;"}</p>
 
-```{r, fig.align='center', fig.width=7, fig.height=5}
+```{r, fig.align='center', fig.width=10, fig.height=5, message=FALSE}
 filtered_data <- kredyty_inp %>%
-    mutate(Income = (ApplicantIncome + CoapplicantIncome)/1000)
-ggplot(data = filtered_data, aes(x = Income, y = LoanAmount, color = Loan_Status)) +
-    geom_point(alpha = 0.7, size = 3) + 
-    labs(
-        x = "Dochód gospodarstwa domowego [tys. USD]",
-        y = "Kwota pożyczki [tys. USD]",
-        color = "Status pożyczki"
-    ) +
-    scale_color_manual(values = c("N" = "orchid", "Y" = "navy")) +
-    theme_minimal() +
-    theme(plot.title = element_text(hjust = 0.5))
-
+  mutate(Income = (ApplicantIncome + CoapplicantIncome)/1000)
+suppressMessages(
+  ggplot(data = filtered_data, aes(x = Income, y = LoanAmount, color = Loan_Status)) +
+  geom_point(alpha = 0.7, size = 3) + 
+  geom_smooth(method = "lm", se = TRUE, color = "maroon", fill = "pink", alpha = 0.3) +
+  labs(
+    x = "Dochód gospodarstwa domowego [tys. USD]",
+    y = "Kwota pożyczki [tys. USD]",
+    color = "Status pożyczki"
+  ) +
+  scale_color_manual(values = c("N" = "orchid", "Y" = "navy")) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+  )
 ```
 
 <p style="text-align: justify;">Zdecydowana większość wniosków kredytowych koncentruje się w obszarze niskich dochodów - poniżej 20 000 USD oraz niskich kwot pożyczek, czyli tych o kwotach poniżej 300 tys. USD. Powyższy wykres wskazuje zatem, że dochód i kwota pożyczki nie są jedynymi czynnikami decyzyjnymi, ponieważ w określonym obszarze występują zarówno wnioski przyjęte, jak i odrzucone.</p>
@@ -697,7 +703,6 @@ kredyty_inp <- kredyty_inp %>%
     Loan_Status = factor(Loan_Status)
   )
 
-# Całkowity dochód
 kredyty_inp <- kredyty_inp %>%
   mutate(
     TotalIncome = ApplicantIncome + CoapplicantIncome
@@ -707,8 +712,6 @@ kredyty_inp <- kredyty_inp %>%
 ## Test Shapiro - Wilka
 
 ```{r}
-#badanie rozkładu zmiennych
-
 shapiro_applicant <- shapiro.test(dane$ApplicantIncome)
 shapiro_loanamount <- shapiro.test(dane$LoanAmount)
 shapiro_loanamountterm <- shapiro.test(dane$Loan_Amount_Term)
@@ -739,113 +742,225 @@ kable(
   row_spec(0, bold = TRUE, color = "navy")
 ```
 
-<p style="text-align: justify;">Test Shapiro - Wilka pokazał, że zarówno zmienna Applicant Income (dochód wnioskodawcy), Loan Amount (kwota kredytu), Total Income (łączny dochód wnioskodawcy i współwnioskodawcy) oraz zmienna Loan Amount Term (okres kredytowania) nie mają rozkładu normalnego. Dla każdego testu p-value było mniejsze od poziomu istotności alfa = 0,05 - należy więc odrzucić hipotezę zerową o normalności rozkładów tych zmiennych.</p>
+<p style="text-align: justify;">Test Shapiro - Wilka pokazał, że zarówno dochód wnioskodawcy ([ApplicantIncome]{style="color:navy;"}), kwota kredytu ([LoanAmount]{style="color:navy;"}), łączny dochód ([TotalIncome]{style="color:navy;"}) oraz okres kredytowania ([Loan_Amount_Term]{style="color:navy;"}) nie mają rozkładu normalnego. Dla każdego testu p-value było mniejsze od poziomu istotności alfa = 0,05 - należy więc odrzucić hipotezę zerową o normalności rozkładów tych zmiennych.</p>
 
-```{r, fig.align='center', fig.width=10, fig.height=9}
-# Porównanie dochodu całkowitego względem decyzji kredytowej
+## Porównanie zmiennych w zależności od grup
+
+```{r, fig.align='center', fig.width=10, fig.height=8}
+common_theme <- theme(
+  plot.title = element_text(size = 14, face = "bold"),
+  axis.title = element_text(size = 12),
+  axis.text = element_text(size = 10)
+)
+
+suppressMessages({
 z1 <- ggbetweenstats(
   data = kredyty_inp,
   x = Loan_Status,
   y = TotalIncome,
   type = "nonparametric",
   messages = FALSE,
+  results.subtitle = FALSE,
   xlab = "Decyzja kredytowa",
   ylab = "Dochód całkowity"
-)
+) + scale_color_manual(values = c("navy", "orchid")
+    ) + common_theme
+})
 
+suppressMessages({
 z2 <- ggbetweenstats(
   data = kredyty_inp,
   x = Loan_Status,
   y = Loan_Amount_Term,
   type = "nonparametric",
   messages = FALSE,
+  results.subtitle = FALSE,
   xlab = "Decyzja kredytowa",
   ylab = "Okres (miesiące)"
-)
+) + scale_color_manual(values = c("navy", "orchid")
+    ) + common_theme
+})
 
+suppressMessages({
 z3 <- ggbetweenstats(
   data = kredyty_inp,
   x = Loan_Status,
   y = LoanAmount,
   type = "nonparametric",
   messages = FALSE,
+  results.subtitle = FALSE,
   xlab = "Decyzja kredytowa",
   ylab = "Kwota kredytu"
-)
+) + scale_color_manual(values = c("navy", "orchid")
+    ) + common_theme
+})
 
+suppressMessages({
 z4 <- ggbetweenstats(
   data = kredyty_inp,
   x = Property_Area,
   y = LoanAmount,
   type = "nonparametric",
   messages = FALSE,
+  results.subtitle = FALSE,
   xlab = "Obszar zamieszkania",
   ylab = "Kwota kredytu"
-)
+) + scale_color_manual(values = c("navy", "orchid", "violet")
+    ) + common_theme
+})
 
 (z1 | z2) /
-(z3 | z4)
+(z3 | z4) +
+  plot_layout(guides = "collect")
+
 ```
 
-```{r}
+<p style="text-align: justify;">Powyższe wykresy wskazują, że osoby, które otrzymały kredyt, cechują się nieco wyższą medianą dochodu całkowitego w porównaniu z tymi, którym kredyt odmówiono. Potwierdza to, że dochód może być jednym z czynników branych pod uwagę przy podejmowaniu decyzji kredytowych. Jednocześnie mediany okresu kredytowania są praktycznie identyczne dla obu grup, co sugeruje, że długość kredytu nie wpływała znacząco na decyzje kredytowe.</p>
+
+<p style="text-align: justify;">W przypadku kwoty przyznawanego kredytu widać, że osoby z przyznanym kredytem mają medianę trochę niższą niż osoby odrzucone, co świadczy o ostrożnym podejściu banku przy udzielaniu kredytów w większych kwotach. Analiza kwoty kredytu w zależności od obszaru zamieszkania pokazuje, że mieszkańcy terenów wiejskich i półmiejskich otrzymują nieco wyższe kwoty niż mieszkańcy miast,co potwierdzają wartości p, z których wynika, że różnice te są statystycznie istotne.</p>
+
+<p style="text-align: justify;">Podsumowując, dochód całkowity i obszar zamieszkania wydają się wpływać na decyzję kredytową oraz wysokość przyznawanego kredytu, podczas gdy okres kredytowania pozostaje neutralny.</p>
+
+```{r include=FALSE}
 ggscatterstats(
   data = kredyty_inp,
   x = TotalIncome,
   y = LoanAmount,
   messages = FALSE,
-  title = "Zależność dochodu i kwoty kredytu"
+  type = "nonparametric"
 )
-```
 
-```{r}
 ggbarstats(
   data = kredyty_inp,
   x = Education,
   y = Loan_Status,
   messages = FALSE,
-  title = "Wykształcenie a decyzja kredytowa"
 )
 ```
 
+## Analiza współzależności
+
+<p style="text-align: justify;">Analiza zależności między wykształceniem a decyzją kredytową została przeprowadzona testem chi-kwadrat Pearsona. Wartość testu wyniosła 4,53, a odpowiadające mu p value = 0,03. Oznacza to, że różnice w decyzjach kredytowych między absolwentami a osobami nieposiadającymi wykształcenia wyższego są statystycznie istotne. Współczynnik V-Cramera (0,08) wskazuje jednak, że siła tego związku jest bardzo słaba, co sugeruje, że wykształcenie ma jedynie niewielki wpływ na podjętą decyzję kredytową. W szczególności w grupie, której kredyt przyznano, odsetek absolwentów był wyższy (81%) niż w grupie odrzuconych (73%), co potwierdza tendencję do preferowania wnioskodawców z wyższym wykształceniem, choć efekt jest ograniczony.</p>
+
+<p style="text-align: justify;">Analiza zależności między dochodem całkowitym a przyznawaną kwotą kredytu wykazała dodatnią korelację, mówiącą o tym, że wyższy dochód wnioskodawcy jest powiązany z wyższą kwotą przyznanego kredytu. Współczynnik korelacji rang Spearmana wyniósł 0,67, co wskazuje na umiarkowanie silną zależność, która jest wysoce istotna statystycznie. Rozrzut przy wyższych dochodach jest większy, co może sugerować, że banki ostrożniej podchodzą do przyznawania bardzo wysokich kredytów, nawet dla osób o wysokim dochodzie.</p>
+
+## Analiza różnic międzygrupowych
+
 ```{r}
-# Test Levene’a
-leveneTest(TotalIncome ~ Loan_Status, data = kredyty_inp)
+levene <- leveneTest(TotalIncome ~ Loan_Status, data = kredyty_inp)
+anova_mod <- aov(TotalIncome ~ Loan_Status, data = kredyty_inp)
+anova_sum <- summary(anova_mod)
+wilcox <- wilcox.test(TotalIncome ~ Loan_Status, data = kredyty_inp)
 
-# ANOVA klasyczna
-anova_income <- aov(TotalIncome ~ Loan_Status, data = kredyty_inp)
-summary(anova_income)
+testy <- data.frame(
+  Test = c("Levene’a", "ANOVA", "Wilcoxon"),
+  Statystyka = c(
+    paste0("F = ", round(levene$`F value`[1], 3)),
+    paste0("F = ", round(anova_sum[[1]]$`F value`[1], 3)),
+    paste0("W = ", wilcox$statistic)
+  ),
+  `p-value` = c(
+    round(levene$`Pr(>F)`[1], 3),
+    round(anova_sum[[1]]$`Pr(>F)`[1], 3),
+    round(wilcox$p.value, 3)
+  ),
+  Wniosek = c(
+    ifelse(levene$`Pr(>F)`[1] < 0.05,
+           "Niejednorodność wariancji",
+           "Jednorodność wariancji"),
+    ifelse(anova_sum[[1]]$`Pr(>F)`[1] < 0.05,
+           "Istotne różnice średnich",
+           "Brak istotnych różnic średnich"),
+    ifelse(wilcox$p.value < 0.05,
+           "Istotne różnice rozkładów",
+           "Brak istotnych różnic rozkładów")
+  )
+)
 
-# Test nieparametryczny
-wilcox.test(TotalIncome ~ Loan_Status, data = kredyty_inp)
+kable(
+  testy,
+  align = "lccc"
+) %>%
+  kable_styling(
+    full_width = FALSE
+  ) %>%
+  row_spec(0, bold = TRUE, color = "navy")
 ```
 
-```{r}
+<p style="text-align: justify;">Analiza nie wykazała istotnych statystycznie różnic poziomu całkowitego dochodu ([TotalIncome]{style="color:navy;"}) pomiędzy grupami wyznaczonymi przez status kredytu ([Loan_Status]{style="color:navy;"}). Zarówno jednoczynnikowa analiza wariancji, jak i nieparametryczny test rang Wilcoxona nie potwierdziły istnienia istotnych różnic między grupami (p value > 0,05). Dodatkowo test Levene’a wskazał na spełnienie założenia jednorodności wariancji, co potwierdza poprawność zastosowania analizy ANOVA. Oznacza to, że w badanej próbie status kredytu nie różnicuje istotnie poziomu całkowitego dochodu.</p>
+
+## Model logitowy
+
+<p style="text-align: justify;">Do analizy wykorzystano model regresji logistycznej, w którym zmienną objaśnianą jest status kredytu ([Loan_Status]{style="color:navy;"}), natomiast zmiennymi objaśniającymi: dochód całkowity ([TotalIncome]{style="color:navy;"}), kwota kredytu ([LoanAmount]{style="color:navy;"}), historia kredytowa ([Credit_History]{style="color:navy;"}), poziom wykształcenia ([Education]{style="color:navy;"}), obszar zamieszkania ([Property_Area]{style="color:navy;"}) oraz status samozatrudnienia ([Self_Employed]{style="color:navy;"}).</p>
+
+```{r include=FALSE}
 model_logistic <- glm(
   Loan_Status ~ TotalIncome + LoanAmount + Credit_History +
     Education + Property_Area + Self_Employed,
   data = kredyty_inp,
   family = binomial
 )
-summary(model_logistic)
+```
 
-odds_ratios <- exp(coef(model_logistic))
-odds_ratios
+<p style="text-align: center;">[**Podsumowanie modelu logitowego**]{style="color:navy;"}</p>
 
-conf_intervals <- exp(confint(model_logistic))
-conf_intervals
+```{r}
+wyniki_modelu <- tidy(model_logistic, conf.int = TRUE, exponentiate = TRUE) %>%
+  mutate(
+    estimate = round(estimate, 3),
+    conf.low = round(conf.low, 3),
+    conf.high = round(conf.high, 3),
+    p.value = round(p.value, 3)
+  )
 
+labels <- c("(Intercept)" = "Intercept",
+            "TotalIncome" = "Total Income",
+            "LoanAmount" = "Loan Amount",
+            "Credit_History" = "Credit History",
+            "EducationNot Graduate" = "Education (Not Graduate)",
+            "Property_AreaSemiurban" = "Property Area (Semiurban)",
+            "Property_AreaUrban" = "Property Area (Urban)",
+            "Self_EmployedYes" = "Self Employed (Yes)"
+)
+
+wyniki_modelu$term <- labels[wyniki_modelu$term]
+
+kable(
+  wyniki_modelu %>% select(term, estimate, conf.low, conf.high, p.value),
+  col.names = c(" ", "Ilorazy szans", "Przedział ufności 2,5%", "Przedział ufności 97,5%", "p-value"),
+  align = c("l","c","c","c","c")
+) %>%
+  kable_styling(full_width = FALSE) %>%
+  row_spec(0, bold = TRUE, color = "navy")
+```
+
+<p style="text-align: justify;">Wyniki modelu logitowego pokazują, że kluczowym czynnikiem wpływającym na przyznanie kredytu jest historia kredytowa ([Credit_History]{style="color:navy;"}) - osoby z pozytywną historią mają wielokrotnie (ponad 30 razy) wyższe szanse na uzyskanie kredytu, przy czym efekt ten jest silny i statystycznie istotny. Istotne znaczenie ma również obszar zamieszkania ([Property_Area]{style="color:navy;"}), ponieważ w porównaniu do terenów wiejskich osoby mieszkające na terenach półmiejskich mają wyraźnie wyższe szanse na otrzymanie kredytu.</p>
+
+<p style="text-align: justify;">Z kolei dochód całkowity ([TotalIncome]{style="color:navy;"}), kwota kredytu ([LoanAmount]{style="color:navy;"}), poziom wykształcenia ([Education]{style="color:navy;"}), status samozatrudnienia ([Self_Employed]{style="color:navy;"}) oraz zamieszkanie w obszarze miejskim ([Property_Area]{style="color:navy;"}) nie wykazują istotnego statystycznie wpływu na decyzję kredytową w oszacowanym modelu. Oznacza to, że decyzje kredytowe w największym stopniu opierają się na wiarygodności kredytowej klienta, a nie na jego bieżących dochodach czy cechach demograficznych.</p>
+
+<p style="text-align: center;">[**Rozkład przewidywanego prawdopodobieństwa decyzji**]{style="color:navy;"}</p>
+
+```{r, fig.align='center', fig.width=10, fig.height=5}
 kredyty_inp$Predicted_Prob <- predict(
   model_logistic,
   type = "response"
 )
 
-
-# Wykres rozkładu prawdopodobieństw
 ggplot(kredyty_inp, aes(x = Predicted_Prob, fill = Loan_Status)) +
   geom_histogram(position = "identity", alpha = 0.6, bins = 30) +
+  scale_fill_manual(
+    values = c("N" = "navy", "Y" = "orchid")
+  ) +
   labs(
-    title = "Rozkład przewidywanego prawdopodobieństwa decyzji",
     x = "Prawdopodobieństwo zatwierdzenia",
-    y = "Liczba obserwacji"
-  )
+    y = "Liczba obserwacji",
+    fill = "Loan_Status"
+  ) +
+  theme_minimal()
 ```
+
+<p style="text-align: justify;">Wykres pokazuje, że model logitowy skutecznie rozróżnia wnioski kredytowe zakończone akceptacją i odrzuceniem. Dla obserwacji z decyzją negatywną przewidywane prawdopodobieństwa przyznania kredytu są zazwyczaj bardzo niskie, natomiast dla decyzji pozytywnych koncentrują się one na wysokich wartościach.</p>
+
+<p style="text-align: justify;">Stosunkowo niewielki obszar nakładania się obu rozkładów wskazuje na dobrą zdolność modelu do separacji klas, choć jednocześnie ujawnia istnienie przypadków granicznych, w których model nie jest w pełni pewny swojej decyzji. Oznacza to, że model ma wysoką użyteczność predykcyjną.</p>
+
+# **Wnioski końcowe**
