@@ -24,6 +24,7 @@ output:
 
 ```{r setup, include=FALSE}
 ## Global options
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 if (!require("naniar")) install.packages("naniar")
 if (!require("Amelia")) install.packages("Amelia")
 if (!require("mice")) install.packages("mice")
@@ -36,6 +37,10 @@ if(!require("ggplot2")) install.packages("ggplot2")
 if(!require("patchwork")) install.packages("patchwork")
 if(!require("tidyr")) install.packages("tidyr")
 if(!require("e1071")) install.packages("e1071")
+if(!require("ggstatsplot")) install.packages("ggstatsplot")
+if(!require("gt")) install.packages("gt")
+library(gt)
+library(ggstatsplot)
 library(finalfit)
 library(Amelia)
 library(mice)
@@ -50,6 +55,8 @@ library(validate)
 library(VIM)
 library(tidyr)
 library(e1071)
+library(tidyverse)
+library(car)
 knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 dane <- read_csv("Hipoteczny.csv")
 ```
@@ -94,6 +101,10 @@ Do analizy wykorzystano zbiór danych: [Hipoteczny.csv](https://github.com/anton
 <p style="text-align: justify;">Projekt koncentruje się na zrozumieniu, które cechy klientów najsilniej wiążą się z przyznaniem lub odrzuceniem kredytu i przygotowaniu modelu, który mógłby automatycznie wskazywać potencjalnie kwalifikujących się wnioskdawców. Wykonamy wstępne oczyszczanie danych, eksplorację, wizualizację i przeprowadzimy analizę jedno oraz dwuwymiarową. Wnioski z analizy pomogą usprawnić proces oceny wniosków kredytowych oraz poprawić skuteczność i spójność decyzji podejmowanych przez firmę.</p>
 
 # **Przygotowanie danych**
+
+## Wstępna analiza danych
+
+<p style="text-align: justify;">Wśród wnioskodawców przeważają mężczyźni (499 z 614) oraz osoby żonate (401 z 614). Większość posiada wykształcenie wyższe (480 z 614). Status kredytu jest nierównomiernie rozłożony: 422 pozytywne decyzje wobec 192 negatywnych, co należy uwzględnić w dalszych analizach. Dodatkowo analiza opisowa wskazała, że rozkłady zmiennych **ApplicantIncome, CoapplicantIncome, LoanAmount** są mocno skośne, z wartościami minimalnymi równymi 0 oraz wartościami maksymalnymi znacznie wyższymi od mediany i kwartylów.</p>
 
 ## Braki danych
 
@@ -667,31 +678,14 @@ kable(
 <p style="text-align: justify;">Analiza korelacji Pearsona pokazuje zróżnicowaną siłę i kierunek zależności między badanymi zmiennymi. Najsilniejsza zależność występuje między dochodem głównego wnioskodawcy a kwotą kredytu (r = 0,55), co wskazuje na umiarkowaną dodatnią korelację: wyższy dochód wiąże się przeciętnie z wyższą kwotą kredytu. Zależność między dochodem współwnioskodawcy a kwotą kredytu jest słaba i dodatnia (r = 0,18), co sugeruje jego mniejsze znaczenie przy ustalaniu wysokości zobowiązania. Korelacje dochodów z okresem spłaty kredytu są bardzo słabe i bliskie zeru (od –0,06 do 0,03), co wskazuje na brak istotnej zależności liniowej. Dochód wnioskodawcy i współwnioskodawcy wykazują natomiast słabą ujemną korelację (r = –0,12), co oznacza brak wyraźnej współzależności między tymi zmiennymi.</p>
 
 # **Testy statystyczne**
-```{r include=FALSE}
-install.packages("ggstatsplot")
-library(ggstatsplot)
 
-```
-
-```{r}
-#badanie rozkładu zmiennych
-shapiro_applicant <- shapiro.test(dane$ApplicantIncome)
-shapiro_loanamount <- shapiro.test(dane$LoanAmount)
-shapiro_applicant
-shapiro_loanamount
-```
-Test Shapiro pokazał, że zarówno zmienna ApplicantIncome (dochód wnioskodawcy), jak i zmienna LoanAmount (kwota kredytu) nie mają rozkładu normalnego. Dla obu testów p-value było mniejsze od 0,5, więc należy odrzucić hipotezę zerową o normalności rozkładu.
-```{r}
+```{r eval=FALSE, include=FALSE}
 str(kredyty_inp)
 head(kredyty_inp)
 summary(kredyty_inp)
 ```
 
-```{r}
-library(ggstatsplot)
-library(tidyverse)
-library(car)
-
+```{r include=FALSE}
 kredyty_inp <- kredyty_inp %>%
   mutate(
     Gender = factor(Gender),
@@ -710,57 +704,87 @@ kredyty_inp <- kredyty_inp %>%
   )
 ```
 
+## Test Shapiro - Wilka
+
 ```{r}
+#badanie rozkładu zmiennych
+
+shapiro_applicant <- shapiro.test(dane$ApplicantIncome)
+shapiro_loanamount <- shapiro.test(dane$LoanAmount)
+shapiro_loanamountterm <- shapiro.test(dane$Loan_Amount_Term)
+shapiro_totalincome <- shapiro.test(kredyty_inp$TotalIncome)
+
+wyniki_shapiro <- tibble(
+  Zmienna = c("Applicant Income", "Loan Amount", "Total Income", "Loan Amount Term"),
+  W = c(shapiro_applicant$statistic,
+        shapiro_loanamount$statistic,
+        shapiro_totalincome$statistic,
+        shapiro_loanamountterm$statistic),
+  p_value = c(shapiro_applicant$p.value,
+              shapiro_loanamount$p.value,
+              shapiro_totalincome$p.value,
+              shapiro_loanamountterm$p.value)
+)
+
+kable(
+  wyniki_shapiro,
+  digits = 4,
+  align = c("l", "c", "c"),
+  col.names = c("", "W", "p-value")
+) %>%
+  kable_styling(
+    full_width = FALSE,
+    position = "center"
+  ) %>%
+  row_spec(0, bold = TRUE, color = "navy")
+```
+
+<p style="text-align: justify;">Test Shapiro - Wilka pokazał, że zarówno zmienna Applicant Income (dochód wnioskodawcy), Loan Amount (kwota kredytu), Total Income (łączny dochód wnioskodawcy i współwnioskodawcy) oraz zmienna Loan Amount Term (okres kredytowania) nie mają rozkładu normalnego. Dla każdego testu p-value było mniejsze od poziomu istotności alfa = 0,05 - należy więc odrzucić hipotezę zerową o normalności rozkładów tych zmiennych.</p>
+
+```{r, fig.align='center', fig.width=10, fig.height=9}
 # Porównanie dochodu całkowitego względem decyzji kredytowej
-ggbetweenstats(
+z1 <- ggbetweenstats(
   data = kredyty_inp,
   x = Loan_Status,
   y = TotalIncome,
-  type = "parametric",
+  type = "nonparametric",
   messages = FALSE,
-  title = "Dochód całkowity a decyzja kredytowa",
   xlab = "Decyzja kredytowa",
   ylab = "Dochód całkowity"
 )
-```
 
-```{r}
-ggbetweenstats(
-  data = kredyty_inp,
-  x = Loan_Status,
-  y = LoanAmount,
-  type = "parametric",
-  messages = FALSE,
-  title = "Kwota kredytu a decyzja kredytowa",
-  xlab = "Decyzja kredytowa",
-  ylab = "Kwota kredytu"
-)
-```
-
-```{r}
-ggbetweenstats(
+z2 <- ggbetweenstats(
   data = kredyty_inp,
   x = Loan_Status,
   y = Loan_Amount_Term,
   type = "nonparametric",
   messages = FALSE,
-  title = "Okres kredytowania a decyzja",
-  xlab = "Decyzja",
+  xlab = "Decyzja kredytowa",
   ylab = "Okres (miesiące)"
 )
-```
 
-```{r}
-ggbetweenstats(
+z3 <- ggbetweenstats(
+  data = kredyty_inp,
+  x = Loan_Status,
+  y = LoanAmount,
+  type = "nonparametric",
+  messages = FALSE,
+  xlab = "Decyzja kredytowa",
+  ylab = "Kwota kredytu"
+)
+
+z4 <- ggbetweenstats(
   data = kredyty_inp,
   x = Property_Area,
   y = LoanAmount,
-  type = "parametric",
+  type = "nonparametric",
   messages = FALSE,
-  title = "Obszar zamieszkania a kwota kredytu",
-  xlab = "Obszar",
+  xlab = "Obszar zamieszkania",
   ylab = "Kwota kredytu"
 )
+
+(z1 | z2) /
+(z3 | z4)
 ```
 
 ```{r}
@@ -774,7 +798,7 @@ ggscatterstats(
 ```
 
 ```{r}
-ggchisqstats(
+ggbarstats(
   data = kredyty_inp,
   x = Education,
   y = Loan_Status,
