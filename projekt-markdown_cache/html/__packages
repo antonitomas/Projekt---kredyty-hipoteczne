@@ -14,3 +14,13 @@ ggplot2
 patchwork
 tidyr
 e1071
+ggstatsplot
+gt
+tidyverse
+tibble
+purrr
+stringr
+forcats
+lubridate
+carData
+car
